@@ -1,0 +1,19 @@
+season 2024
+
+== market=reputation, pick 5, 150 drafts ==
+   now: G72 + per-game table    weekly win 58.6%   vs now +0.0% (+0.0% to +0.0%)
+   G82c + per-game table        weekly win 58.5%   vs now -0.1% (-1.5% to +1.1%)
+   G72c + per-game table        weekly win 58.5%   vs now -0.1% (-1.5% to +1.1%)
+   G72 + season table           weekly win 55.9%   vs now -2.7% (-4.4% to -1.0%)
+   G82c + season table          weekly win 56.0%   vs now -2.7% (-4.3% to -1.1%)
+   G82c + season table + age    weekly win 57.3%   vs now -1.4% (-3.1% to +0.2%)
+   G72 + season table + age     weekly win 56.5%   vs now -2.1% (-4.1% to -0.2%)
+
+== market=projection, pick 5, 150 drafts ==
+   now: G72 + per-game table    weekly win 62.3%   vs now +0.0% (+0.0% to +0.0%)
+   G82c + per-game table        weekly win 55.1%   vs now -7.2% (-10.4% to -4.0%)
+   G72c + per-game table        weekly win 55.1%   vs now -7.2% (-10.4% to -4.0%)
+   G72 + season table           weekly win 63.9%   vs now +1.7% (-0.6% to +3.9%)
+   G82c + season table          weekly win 60.6%   vs now -1.6% (-3.0% to -0.2%)
+   G82c + season table + age    weekly win 64.4%   vs now +2.1% (-0.1% to +4.3%)
+   G72 + season table + age     weekly win 65.2%   vs now +2.9% (+0.6% to +5.2%)

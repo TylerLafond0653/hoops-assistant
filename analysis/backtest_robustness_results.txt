@@ -1,0 +1,84 @@
+
+== market=reputation, pick 5, 200 drafts: weekly win (mean over weeks) ==
+   ADP 58.5%  VALUE 52.7%  VALUE_G 71.8%  VALUE_GM 66.6%  WAIT 64.9%  POS 67.4%  GSCORE 65.5%  TEAM_5 73.8%  TEAM_G 72.9%  VALUE_GM25 70.9%  WAIT_G 69.1%
+   VALUE_G    - VALUE    : +19.1%  (95% week-bootstrap +15.5% to +23.1%)  <- clear
+   VALUE_G    - ADP      : +13.3%  (95% week-bootstrap +6.8% to +19.9%)  <- clear
+   VALUE_GM   - VALUE_G  : -5.2%  (95% week-bootstrap -9.7% to -0.4%)  <- clear
+   VALUE_GM25 - VALUE_G  : -0.9%  (95% week-bootstrap -4.1% to +2.6%)
+   WAIT       - VALUE_GM : -1.7%  (95% week-bootstrap -3.1% to -0.2%)  <- clear
+   WAIT_G     - VALUE_G  : -2.7%  (95% week-bootstrap -6.0% to +0.7%)
+   POS        - VALUE_GM : +0.8%  (95% week-bootstrap -0.2% to +1.6%)
+   GSCORE     - VALUE_GM : -1.1%  (95% week-bootstrap -5.8% to +3.3%)
+   TEAM_5     - VALUE_GM : +7.2%  (95% week-bootstrap +3.4% to +11.1%)  <- clear
+   TEAM_5     - VALUE_G  : +2.0%  (95% week-bootstrap -3.4% to +7.4%)
+   TEAM_G     - TEAM_5   : -0.9%  (95% week-bootstrap -2.7% to +0.8%)
+
+== market=reputation, pick 1, 100 drafts: weekly win (mean over weeks) ==
+   ADP 62.8%  VALUE 64.8%  VALUE_G 77.1%  VALUE_GM 74.8%  WAIT 73.9%  POS 75.1%  GSCORE 71.6%  TEAM_5 77.6%  TEAM_G 78.5%  VALUE_GM25 78.2%  WAIT_G 76.2%
+   VALUE_G    - VALUE    : +12.3%  (95% week-bootstrap +9.1% to +16.1%)  <- clear
+   VALUE_G    - ADP      : +14.3%  (95% week-bootstrap +8.7% to +19.8%)  <- clear
+   VALUE_GM   - VALUE_G  : -2.3%  (95% week-bootstrap -6.1% to +1.7%)
+   VALUE_GM25 - VALUE_G  : +1.1%  (95% week-bootstrap -1.1% to +3.4%)
+   WAIT       - VALUE_GM : -0.9%  (95% week-bootstrap -1.7% to -0.2%)  <- clear
+   WAIT_G     - VALUE_G  : -0.9%  (95% week-bootstrap -2.6% to +1.0%)
+   POS        - VALUE_GM : +0.3%  (95% week-bootstrap -1.2% to +1.6%)
+   GSCORE     - VALUE_GM : -3.2%  (95% week-bootstrap -7.9% to +1.3%)
+   TEAM_5     - VALUE_GM : +2.8%  (95% week-bootstrap -1.3% to +7.0%)
+   TEAM_5     - VALUE_G  : +0.6%  (95% week-bootstrap -3.6% to +5.0%)
+   TEAM_G     - TEAM_5   : +0.9%  (95% week-bootstrap -2.1% to +3.9%)
+
+== market=reputation, pick 10, 100 drafts: weekly win (mean over weeks) ==
+   ADP 60.5%  VALUE 51.6%  VALUE_G 74.0%  VALUE_GM 66.4%  WAIT 65.2%  POS 65.9%  GSCORE 64.4%  TEAM_5 70.4%  TEAM_G 73.2%  VALUE_GM25 71.3%  WAIT_G 74.0%
+   VALUE_G    - VALUE    : +22.4%  (95% week-bootstrap +17.9% to +27.1%)  <- clear
+   VALUE_G    - ADP      : +13.5%  (95% week-bootstrap +7.8% to +19.5%)  <- clear
+   VALUE_GM   - VALUE_G  : -7.7%  (95% week-bootstrap -11.8% to -3.6%)  <- clear
+   VALUE_GM25 - VALUE_G  : -2.7%  (95% week-bootstrap -5.6% to +0.3%)
+   WAIT       - VALUE_GM : -1.1%  (95% week-bootstrap -1.7% to -0.5%)  <- clear
+   WAIT_G     - VALUE_G  : +0.0%  (95% week-bootstrap -1.6% to +1.7%)
+   POS        - VALUE_GM : -0.5%  (95% week-bootstrap -2.0% to +1.1%)
+   GSCORE     - VALUE_GM : -1.9%  (95% week-bootstrap -8.1% to +4.4%)
+   TEAM_5     - VALUE_GM : +4.1%  (95% week-bootstrap +1.5% to +6.9%)  <- clear
+   TEAM_5     - VALUE_G  : -3.6%  (95% week-bootstrap -7.1% to +0.1%)
+   TEAM_G     - TEAM_5   : +2.8%  (95% week-bootstrap -0.4% to +5.7%)
+
+== market=projection, pick 5, 200 drafts: weekly win (mean over weeks) ==
+   ADP 60.3%  VALUE 42.5%  VALUE_G 60.3%  VALUE_GM 60.1%  WAIT 60.1%  POS 59.8%  GSCORE 57.5%  TEAM_5 65.6%  TEAM_G 65.3%  VALUE_GM25 59.8%  WAIT_G 60.3%
+   VALUE_G    - VALUE    : +17.8%  (95% week-bootstrap +13.7% to +21.8%)  <- clear
+   VALUE_G    - ADP      : +0.0%  (95% week-bootstrap +0.0% to +0.0%)  <- clear
+   VALUE_GM   - VALUE_G  : -0.2%  (95% week-bootstrap -1.4% to +1.1%)
+   VALUE_GM25 - VALUE_G  : -0.5%  (95% week-bootstrap -1.6% to +0.5%)
+   WAIT       - VALUE_GM : +0.0%  (95% week-bootstrap -0.1% to +0.1%)
+   WAIT_G     - VALUE_G  : +0.0%  (95% week-bootstrap +0.0% to +0.0%)  <- clear
+   POS        - VALUE_GM : -0.3%  (95% week-bootstrap -1.4% to +0.7%)
+   GSCORE     - VALUE_GM : -2.6%  (95% week-bootstrap -6.6% to +1.7%)
+   TEAM_5     - VALUE_GM : +5.5%  (95% week-bootstrap +2.5% to +8.6%)  <- clear
+   TEAM_5     - VALUE_G  : +5.3%  (95% week-bootstrap +2.5% to +8.2%)  <- clear
+   TEAM_G     - TEAM_5   : -0.4%  (95% week-bootstrap -2.1% to +1.5%)
+
+== market=projection, pick 1, 100 drafts: weekly win (mean over weeks) ==
+   ADP 63.3%  VALUE 54.9%  VALUE_G 63.3%  VALUE_GM 64.5%  WAIT 64.5%  POS 64.6%  GSCORE 62.8%  TEAM_5 68.0%  TEAM_G 72.5%  VALUE_GM25 64.4%  WAIT_G 63.3%
+   VALUE_G    - VALUE    : +8.4%  (95% week-bootstrap +3.7% to +13.0%)  <- clear
+   VALUE_G    - ADP      : +0.0%  (95% week-bootstrap +0.0% to +0.0%)  <- clear
+   VALUE_GM   - VALUE_G  : +1.1%  (95% week-bootstrap +0.1% to +2.3%)  <- clear
+   VALUE_GM25 - VALUE_G  : +1.0%  (95% week-bootstrap +0.1% to +2.0%)  <- clear
+   WAIT       - VALUE_GM : +0.0%  (95% week-bootstrap -0.0% to +0.1%)
+   WAIT_G     - VALUE_G  : +0.0%  (95% week-bootstrap +0.0% to +0.0%)  <- clear
+   POS        - VALUE_GM : +0.2%  (95% week-bootstrap -1.6% to +2.1%)
+   GSCORE     - VALUE_GM : -1.6%  (95% week-bootstrap -4.9% to +1.9%)
+   TEAM_5     - VALUE_GM : +3.5%  (95% week-bootstrap +0.9% to +6.2%)  <- clear
+   TEAM_5     - VALUE_G  : +4.7%  (95% week-bootstrap +1.8% to +7.6%)  <- clear
+   TEAM_G     - TEAM_5   : +4.5%  (95% week-bootstrap +2.4% to +6.7%)  <- clear
+
+== market=projection, pick 10, 100 drafts: weekly win (mean over weeks) ==
+   ADP 58.3%  VALUE 34.9%  VALUE_G 58.3%  VALUE_GM 58.9%  WAIT 58.9%  POS 58.6%  GSCORE 54.6%  TEAM_5 59.2%  TEAM_G 61.7%  VALUE_GM25 58.3%  WAIT_G 58.3%
+   VALUE_G    - VALUE    : +23.4%  (95% week-bootstrap +18.5% to +28.1%)  <- clear
+   VALUE_G    - ADP      : +0.0%  (95% week-bootstrap +0.0% to +0.0%)  <- clear
+   VALUE_GM   - VALUE_G  : +0.6%  (95% week-bootstrap -1.7% to +2.8%)
+   VALUE_GM25 - VALUE_G  : +0.0%  (95% week-bootstrap -2.1% to +2.0%)
+   WAIT       - VALUE_GM : +0.0%  (95% week-bootstrap +0.0% to +0.0%)  <- clear
+   WAIT_G     - VALUE_G  : +0.0%  (95% week-bootstrap +0.0% to +0.0%)  <- clear
+   POS        - VALUE_GM : -0.3%  (95% week-bootstrap -1.6% to +1.1%)
+   GSCORE     - VALUE_GM : -4.3%  (95% week-bootstrap -10.3% to +1.9%)
+   TEAM_5     - VALUE_GM : +0.3%  (95% week-bootstrap -2.3% to +2.7%)
+   TEAM_5     - VALUE_G  : +0.9%  (95% week-bootstrap -2.2% to +4.1%)
+   TEAM_G     - TEAM_5   : +2.5%  (95% week-bootstrap -1.6% to +6.5%)

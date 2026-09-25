@@ -1,0 +1,32 @@
+category spread over the top 150 (app z scale): {'PTS': 1.31, 'REB': 1.32, 'AST': 1.36, 'STL': 1.05, 'BLK': 1.42, '3PM': 1.9, 'FG': 1.37, 'FT': 1.47, 'TO': 1.31}
+season 2024
+
+== market=reputation, pick 5, 150 drafts: weekly win (mean over weeks) ==
+   ADP 62.8%  VALUE 56.0%  VALUE_G 55.3%  VALUE_GM 58.6%  WAIT 62.4%  POS 61.6%  GSCORE 63.4%  TEAM_5 57.9%  TEAM_G 62.5%  VALUE_GM25 56.3%  WAIT_G 57.5%  NORM_G 55.1%
+   VALUE_G    - VALUE    : -0.7%  (95% week-bootstrap -5.1% to +3.6%)
+   VALUE_G    - ADP      : -7.5%  (95% week-bootstrap -13.8% to -1.7%)  <- clear
+   VALUE_GM   - VALUE_G  : +3.4%  (95% week-bootstrap +0.8% to +6.1%)  <- clear
+   VALUE_GM25 - VALUE_G  : +1.1%  (95% week-bootstrap -0.4% to +2.5%)
+   WAIT       - VALUE_GM : +3.8%  (95% week-bootstrap +1.7% to +6.0%)  <- clear
+   WAIT_G     - VALUE_G  : +2.3%  (95% week-bootstrap -0.6% to +5.0%)
+   POS        - VALUE_GM : +2.9%  (95% week-bootstrap +1.5% to +4.5%)  <- clear
+   GSCORE     - VALUE_GM : +4.8%  (95% week-bootstrap -0.2% to +9.9%)
+   TEAM_5     - VALUE_GM : -0.8%  (95% week-bootstrap -3.7% to +2.0%)
+   TEAM_5     - VALUE_G  : +2.6%  (95% week-bootstrap -1.3% to +6.3%)
+   TEAM_G     - TEAM_5   : +4.6%  (95% week-bootstrap -0.1% to +9.5%)
+   NORM_G     - VALUE_G  : -0.1%  (95% week-bootstrap -5.1% to +4.4%)
+
+== market=projection, pick 5, 150 drafts: weekly win (mean over weeks) ==
+   ADP 63.9%  VALUE 59.0%  VALUE_G 63.9%  VALUE_GM 62.3%  WAIT 62.4%  POS 62.7%  GSCORE 62.5%  TEAM_5 62.1%  TEAM_G 66.6%  VALUE_GM25 63.5%  WAIT_G 63.9%  NORM_G 62.9%
+   VALUE_G    - VALUE    : +5.0%  (95% week-bootstrap +0.9% to +9.0%)  <- clear
+   VALUE_G    - ADP      : +0.0%  (95% week-bootstrap +0.0% to +0.0%)  <- clear
+   VALUE_GM   - VALUE_G  : -1.7%  (95% week-bootstrap -3.9% to +0.6%)
+   VALUE_GM25 - VALUE_G  : -0.5%  (95% week-bootstrap -1.4% to +0.5%)
+   WAIT       - VALUE_GM : +0.1%  (95% week-bootstrap -1.3% to +1.6%)
+   WAIT_G     - VALUE_G  : +0.0%  (95% week-bootstrap +0.0% to +0.0%)  <- clear
+   POS        - VALUE_GM : +0.4%  (95% week-bootstrap -0.3% to +1.2%)
+   GSCORE     - VALUE_GM : +0.3%  (95% week-bootstrap -5.9% to +6.1%)
+   TEAM_5     - VALUE_GM : -0.2%  (95% week-bootstrap -4.0% to +3.6%)
+   TEAM_5     - VALUE_G  : -1.8%  (95% week-bootstrap -5.4% to +1.6%)
+   TEAM_G     - TEAM_5   : +4.5%  (95% week-bootstrap +0.8% to +8.2%)  <- clear
+   NORM_G     - VALUE_G  : -1.0%  (95% week-bootstrap -5.4% to +3.3%)

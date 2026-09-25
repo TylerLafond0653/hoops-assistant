@@ -1,0 +1,20 @@
+name: Hoops checkup
+on:
+  schedule:
+    - cron: "0 14 * * *"     # every day around 10 AM Eastern (GitHub runs can start a few minutes late)
+  workflow_dispatch:          # "Run workflow" button for a manual check
+jobs:
+  checkup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run the checkup
+        env:
+          ESPN_S2: ${{ secrets.ESPN_S2 }}
+          ESPN_SWID: ${{ secrets.ESPN_SWID }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USER_ID: ${{ secrets.DISCORD_USER_ID }}
+        run: python inseason/checkup.py

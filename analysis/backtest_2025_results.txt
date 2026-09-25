@@ -1,0 +1,63 @@
+pool 240 | weeks 23 | measured weekly sd (odd weeks): {'PTS': 5.5, 'REB': 5.0, 'AST': 4.9, 'STL': 8.7, 'BLK': 5.6, '3PM': 7.2, 'FG': 8.3, 'FT': 9.5, 'TO': 6.3} [4s]
+
+==== market = reputation, opponent scatter x1.0, 300 drafts, you pick 5th ====
+  ADP       weekly win 58.2% (even weeks 58.6%) | cats/week 4.81 | avg finish 3.8 | top-3 53%   [2s]
+  VALUE     weekly win 52.7% (even weeks 52.5%) | cats/week 4.64 | avg finish 4.9 | top-3 37%   [2s]
+  VALUE_G   weekly win 71.9% (even weeks 75.4%) | cats/week 5.43 | avg finish 1.6 | top-3 93%   [2s]
+  VALUE_GM  weekly win 66.4% (even weeks 69.3%) | cats/week 5.13 | avg finish 2.3 | top-3 80%   [2s]
+  WAIT      weekly win 65.2% (even weeks 67.2%) | cats/week 5.07 | avg finish 2.5 | top-3 77%   [3s]
+  POS       weekly win 67.1% (even weeks 70.1%) | cats/week 5.15 | avg finish 2.2 | top-3 81%   [2s]
+  GSCORE    weekly win 65.7% (even weeks 67.4%) | cats/week 5.04 | avg finish 2.4 | top-3 77%   [3s]
+  PUNT_FT   weekly win 28.4% (even weeks 24.9%) | cats/week 4.20 | avg finish 9.5 | top-3 0%   [3s]
+  PUNT_TO   weekly win 60.6% (even weeks 63.6%) | cats/week 4.81 | avg finish 3.0 | top-3 65%   [3s]
+  TEAM_5    weekly win 74.0% (even weeks 73.4%) | cats/week 5.24 | avg finish 1.5 | top-3 91%   [9s]
+  TEAM_G    weekly win 73.1% (even weeks 73.3%) | cats/week 5.18 | avg finish 1.5 | top-3 93%   [9s]
+  paired difference in weekly win rate vs VALUE_G (all weeks; even weeks), with standard error:
+    ADP       all : -13.7% ± 0.6%    ADP       even: -16.9% ± 0.7%
+    VALUE     all : -19.2% ± 0.6%    VALUE     even: -22.9% ± 0.7%
+    VALUE_GM  all : -5.4% ± 0.5%    VALUE_GM  even: -6.2% ± 0.6%
+    WAIT      all : -6.7% ± 0.5%    WAIT      even: -8.3% ± 0.6%
+    POS       all : -4.7% ± 0.6%    POS       even: -5.4% ± 0.6%
+    GSCORE    all : -6.2% ± 0.6%    GSCORE    even: -8.0% ± 0.7%
+    PUNT_FT   all : -43.5% ± 0.6%    PUNT_FT   even: -50.5% ± 0.6%
+    PUNT_TO   all : -11.3% ± 0.6%    PUNT_TO   even: -11.8% ± 0.6%
+    TEAM_5    all : +2.2% ± 0.7%    TEAM_5    even: -2.1% ± 0.7%
+    TEAM_G    all : +1.2% ± 0.5%    TEAM_G    even: -2.1% ± 0.6%
+
+==== market = projection, opponent scatter x1.0, 150 drafts, you pick 5th ====
+  ADP       weekly win 60.6% (even weeks 61.8%) | cats/week 4.90 | avg finish 3.4 | top-3 61%   [1s]
+  VALUE     weekly win 43.3% (even weeks 45.1%) | cats/week 4.26 | avg finish 7.1 | top-3 13%   [1s]
+  VALUE_G   weekly win 60.6% (even weeks 61.8%) | cats/week 4.90 | avg finish 3.4 | top-3 61%   [1s]
+  VALUE_GM  weekly win 60.3% (even weeks 61.1%) | cats/week 4.88 | avg finish 3.5 | top-3 64%   [1s]
+  WAIT      weekly win 60.3% (even weeks 61.1%) | cats/week 4.88 | avg finish 3.5 | top-3 64%   [1s]
+  GSCORE    weekly win 57.4% (even weeks 56.8%) | cats/week 4.72 | avg finish 3.7 | top-3 57%   [2s]
+  TEAM_5    weekly win 65.6% (even weeks 64.6%) | cats/week 4.95 | avg finish 2.2 | top-3 83%   [5s]
+  TEAM_G    weekly win 65.3% (even weeks 65.3%) | cats/week 4.91 | avg finish 2.3 | top-3 79%   [4s]
+  paired difference in weekly win rate vs VALUE_G (all weeks; even weeks), with standard error:
+    ADP       all : +0.0% ± 0.0%    ADP       even: +0.0% ± 0.0%
+    VALUE     all : -17.3% ± 1.0%    VALUE     even: -16.7% ± 1.1%
+    VALUE_GM  all : -0.2% ± 0.5%    VALUE_GM  even: -0.6% ± 0.5%
+    WAIT      all : -0.2% ± 0.5%    WAIT      even: -0.7% ± 0.5%
+    GSCORE    all : -3.1% ± 1.0%    GSCORE    even: -5.0% ± 1.1%
+    TEAM_5    all : +5.1% ± 1.0%    TEAM_5    even: +2.8% ± 1.1%
+    TEAM_G    all : +4.7% ± 0.9%    TEAM_G    even: +3.5% ± 1.0%
+
+==== market = reputation, opponent scatter x2.5, 150 drafts, you pick 5th ====
+  VALUE_G   weekly win 83.5% (even weeks 86.1%) | cats/week 5.87 | avg finish 1.1 | top-3 100%   [1s]
+  VALUE_GM  weekly win 79.9% (even weeks 81.6%) | cats/week 5.68 | avg finish 1.1 | top-3 99%   [1s]
+  WAIT      weekly win 80.0% (even weeks 81.7%) | cats/week 5.67 | avg finish 1.1 | top-3 99%   [1s]
+  paired difference in weekly win rate vs VALUE_G (all weeks; even weeks), with standard error:
+    VALUE_GM  all : -3.6% ± 0.5%    VALUE_GM  even: -4.5% ± 0.7%
+    WAIT      all : -3.5% ± 0.5%    WAIT      even: -4.4% ± 0.6%
+
+category win rates, reputation market (VALUE_G / GSCORE / TEAM_5 / TEAM_G):
+  PTS  75% / 64% / 74% / 73%
+  REB  74% / 97% / 80% / 84%
+  AST  57% / 63% / 85% / 88%
+  STL  65% / 47% / 73% / 71%
+  BLK  73% / 92% / 70% / 73%
+  3PM  52% / 19% / 21% / 13%
+  FG   56% / 78% / 72% / 77%
+  FT   59% / 18% / 30% / 22%
+  TO   33% / 26% / 18% / 16%
+total 64s

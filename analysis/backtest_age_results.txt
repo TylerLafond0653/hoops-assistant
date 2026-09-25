@@ -1,0 +1,9 @@
+season 2026 | held-out age adjustment -0.29
+   reputation: now 66.5%, with age adjustment +4.6% (+2.6% to +6.8%)
+   projection: now 60.3%, with age adjustment +1.9% (-0.1% to +3.9%)
+season 2025 | held-out age adjustment -0.41
+   reputation: now 57.2%, with age adjustment +0.7% (-0.2% to +1.5%)
+   projection: now 61.4%, with age adjustment -0.3% (-2.0% to +1.4%)
+season 2024 | held-out age adjustment -0.57
+   reputation: now 58.6%, with age adjustment -0.3% (-2.0% to +1.4%)
+   projection: now 62.3%, with age adjustment -0.4% (-2.5% to +1.7%)
