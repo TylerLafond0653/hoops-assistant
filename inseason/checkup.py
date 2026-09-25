@@ -246,8 +246,10 @@ def main():
             first = min(min(v) for v in sched.values())
             today = first
         else:
-            cfg = json.load(open(os.path.join(HERE, 'config.json'), encoding='utf-8'))
-            sec = load_secrets()
+            cfgp = os.path.join(HERE, 'config.json'); sec = load_secrets()
+            if not os.path.exists(cfgp) or not sec.get('ESPN_S2') or not sec.get('ESPN_SWID'):
+                print('Not set up yet (needs inseason/config.json and ESPN cookies): skipping.'); return
+            cfg = json.load(open(cfgp, encoding='utf-8'))
             L = load_league(cfg, (sec['ESPN_S2'], sec['ESPN_SWID']))
             today = datetime.datetime.now(TZ).date()
         week = (today - datetime.timedelta(days=today.weekday()), today + datetime.timedelta(days=6 - today.weekday()))
