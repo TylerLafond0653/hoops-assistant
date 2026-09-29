@@ -1,6 +1,6 @@
 # Hoops Draft Room model audit (Sept 25, 2026)
 
-> **Reading guide:** sections 1–16 describe the model as it was audited on Sept 25. The changes made since, and the evidence behind each, are in **§17** (the audit fixes) and **§18** (the ranking sources: expert consensus as the market, FantasyPros projections, leaguemates as expert/ESPN types). The current app follows §17–18.
+> **Reading guide:** sections 1–16 describe the model as it was audited on Sept 25. The changes made since, and the evidence behind each, are in **§17** (the audit fixes) and **§18** (the ranking sources: expert consensus as the market, FantasyPros projections, leaguemates as expert/ESPN types). The current app follows §17–18. **§19** is a stress test against leaguemates who commit to builds and make mistakes.
 
 **Question audited:** given the current draft state, does the app pick the player with the highest expected value for your roster in a 10-team, 9-category head-to-head (H2H) keeper league?
 
@@ -552,3 +552,85 @@ Bold means the 95% interval excludes zero.
 ### After the change
 - **Agreement:** the app's ranking agrees with the experts at 0.97 (was 0.93) and with ESPN's category rank at 0.93 (was 0.97). It still keeps projection-based opinions, such as Kawhi 17th vs the experts' 26th.
 - **Checks:** self-test passes, no console errors, a full practice draft passes the consistency checks, and the stress tests are sensible.
+
+## 19. League stress test: leaguemates with builds and mistakes (Sept 29, 2026)
+
+**Question:** when leaguemates commit to different builds and make mistakes, does the app build around them and still win?
+
+**Method:** `analysis/league_personas_test.js`, run in the live app.
+- **Leagues:** 5 kinds of league, 4 drafts each, with you at 5th.
+- **Leaguemates:** each drafts off the expert consensus or ESPN's list, with realistic scatter. Some commit to a build and reach for players who fit it. Some make mistakes (reaches of 15-45 spots, injured players, old vets, rookie hype).
+- **Your picks, four ways, in the same leagues:**
+  - the app's Recommended pick;
+  - best available by the experts;
+  - best available by ESPN's list;
+  - the app's board order.
+- **Season:** 600 simulated seasons per draft, each with:
+  - a projection miss for every player (the size the app assumes);
+  - a 19-week schedule, each week decided category by category with the measured weekly swings;
+  - top 6 into the playoffs.
+- **Three views of what's true:**
+  - the app's values;
+  - projections only;
+  - "the experts are right". This is the skeptical check, since it grades the app on the list the experts drafting strategy uses.
+
+An average team wins 9.5 of 19 weeks, makes the playoffs 60% of the time and wins the title 10% of the time.
+
+| League | You draft by | Wins | Playoffs | Title | Wins if projections right | Wins if experts right |
+|---|---|---|---|---|---|---|
+| Control: everyone balanced, no mistakes | **App** | **12.9** | **92%** | **31%** | 14.2 | 11.5 |
+| | Experts | 11.7 | 84% | 22% | 11.1 | 12.3 |
+| | ESPN list | 9.7 | 62% | 13% | 11.2 | 8.2 |
+| Builds: everyone commits to a different build, 5% mistakes | **App** | **12.2** | **88%** | **26%** | 12.8 | 11.7 |
+| | Experts | 11.6 | 84% | 21% | 10.7 | 12.4 |
+| | ESPN list | 9.9 | 67% | 11% | 10.3 | 9.6 |
+| Messy: same builds, 20% mistakes, a Raptors homer, a vet lover, a rookie lover | **App** | **13.2** | **94%** | **33%** | 13.9 | 12.5 |
+| | Experts | 12.9 | 94% | 33% | 12.5 | 13.3 |
+| | ESPN list | 11.6 | 83% | 21% | 12.2 | 10.9 |
+| Bigs rush: 5 teams chase big men from round 1-2 | **App** | **13.0** | **94%** | **31%** | 14.1 | 11.9 |
+| | Experts | 11.9 | 88% | 22% | 11.6 | 12.3 |
+| | ESPN list | 11.5 | 82% | 19% | 12.3 | 10.6 |
+| Guards rush: 5 teams chase guards from round 1-2 | **App** | **11.7** | **85%** | **24%** | 12.4 | 10.9 |
+| | Experts | 10.0 | 69% | 13% | 9.0 | 11.1 |
+| | ESPN list | 9.7 | 62% | 12% | 10.6 | 8.8 |
+
+The board-order strategy landed between the app and the experts; the full output is in the script.
+
+**The app builds around the league.** Your team's average category rank (1 = best of 10):
+
+| League | PTS | REB | AST | STL | BLK | 3PM | FG% | FT% | TO |
+|---|---|---|---|---|---|---|---|---|---|
+| Bigs rush | 2.0 | **9.5** | 3.0 | 2.3 | **8.8** | 1.5 | 7.8 | 1.3 | 7.3 |
+| Guards rush | 6.3 | 3.0 | **9.8** | 5.0 | 2.8 | 6.3 | 4.0 | 5.3 | 2.8 |
+
+- **Bigs rush:** when five teams hoarded big men, the app took the guards they left (Haliburton, Murray, Reaves, Bane, Quickley). It gave up rebounds and blocks and won points, threes, FT%, assists and steals.
+- **Guards rush:** when five teams hoarded guards, it took the bigs instead (Chet, Bam, Jaren Jackson Jr., Okongwu, Zubac, Kel'el Ware).
+- **Mistakes:** leaguemates' mistakes helped. The messy league was the app's best result.
+
+**When you go off-script** (in the Builds league), the app re-plans around your picks. The cost is what the off-script picks themselves lose:
+
+| Your first picks | Wins | Playoffs | Wins if experts right |
+|---|---|---|---|
+| Follow the app | 12.2 | 88% | 11.7 |
+| Giannis, then Jalen Duren | 11.5 | 83% | 10.7 |
+| Trae Young, then LaMelo Ball | 11.1 | 78% | 10.8 |
+| Durant, then Curry | 10.3 | 71% | 8.8 |
+| Three reaches (rounds 3, 6 and 9) | 11.5 | 81% | 11.0 |
+
+**Giannis plus Duren doesn't mean you should punt FT%.** The app stayed Balanced and drafted good free-throw shooters to cover them. Committing to the simulator's Punt FT% plan instead did much worse:
+
+| League | App (stays Balanced) | Committed Punt FT% |
+|---|---|---|
+| Control | 11.2 wins, 81% playoffs | 8.5 wins, 50% playoffs |
+| Builds | 11.5 wins, 83% playoffs | 9.3 wins, 61% playoffs |
+
+**Holes found**
+1. **Plan name.** The plan name can stay "Balanced" after the roster has become a guard team: in the bigs rush it was 9th-10th in rebounds and blocks. The card's "Already losing" line reports it, but the headline doesn't.
+2. **Punt plans in the simulator.** They draft greedily for their categories, so Punt FT% turns into a full big-man build that is also 10th in points, assists and threes. The simulator therefore compares Balanced against a badly run punt, which is part of why the app rarely suggests punts other than Punt AST. A well-run punt hasn't been tested.
+3. **Opponent model.** The simulator's leaguemates draft off the rankings and don't keep following the builds their rosters show. This didn't stop the app from adapting here, because the look-ahead scores against the real rosters already drafted.
+4. **Encoding bug (fixed).** `draft-room.html` had no `<meta charset="utf-8">`. Chrome guesses UTF-8 when the file is opened by double-click, but when served or guessed differently the whole script failed on the accent-stripping regex. Added.
+
+**Limits**
+- All three views of "true" are built from the same projection data. The experts-are-right column is the skeptical check, and there the pure expert list edges the app by 0.2-0.8 wins.
+- Leaguemates scatter about ±3 picks early and ±10 around pick 70.
+- In-season moves (waivers, streaming, trades) aren't modeled.
