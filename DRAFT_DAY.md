@@ -7,7 +7,8 @@ Menu **Terminal → New Terminal**. Then move into this folder:
 cd "C:\Users\tyler\OneDrive - The University of Western Ontario\Year 4\projects\fantasy-draft"
 ```
 
-## 2. The morning of the draft: refresh ESPN's data (about 1 minute)
+## 2. The morning of the draft: refresh the data (about 1 minute)
+One command refreshes everything: the expert consensus and ADP (FantasyPros), then ESPN's data and injury report.
 
 ```
 python pipeline/refresh_espn.py
@@ -57,5 +58,5 @@ It shows which ranking your leaguemates really followed: the expert consensus (k
 
 ## If something breaks
 - **"python not found":** type `py` instead of `python`.
-- **Refresh fails (no internet, or ESPN is down):** the app still works with the data from Sept 25.
-- **Want to go back to the previous version:** open one of the backup files, e.g. `draft-room.backup.html`.
+- **Refresh fails (no internet, or ESPN or FantasyPros is down):** the app still works with the data from the last successful refresh (Sept 29). If only one site fails, the other still updates.
+- **Something looks wrong after a refresh:** every version is saved on GitHub (github.com/TylerLafond0653/hoops-assistant). Ask Claude to restore the last good one.
