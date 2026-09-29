@@ -14,7 +14,8 @@ python pipeline/refresh_espn.py
 ```
 
 This updates, inside `draft-room.html`:
-- ESPN's live ADP and ESPN's category rankings (who your leaguemates will take);
+- the FantasyPros expert consensus for category leagues (what experienced drafters follow) and Yahoo/ESPN ADP;
+- ESPN's live ADP and ESPN's category rankings (the list ESPN's draft room shows);
 - every player's current team (signings and trades are applied automatically);
 - last season's stats;
 - players ESPN drafts who aren't on the app's list.
@@ -35,6 +36,7 @@ Check before your first pick:
 - The 3 dots (**League settings**) show League site = **ESPN** and Scoring = **Head-to-head most categories**.
 - The draft order is Saksham, Jattan, Cristian, Sameer, **Tyler**, Arjun, Surya, Satvik, Santosh, Pratham.
 - Future seasons = **Balanced**, unless you want to win now or build for later.
+- Your leaguemates = **Sharp** (they mostly follow the expert consensus, some follow ESPN's list). Use **Casual** only if your league just drafts straight off ESPN's rankings.
 - Keep the ESPN draft room and the app side by side.
 
 ## 4. During the draft
@@ -51,7 +53,7 @@ Check before your first pick:
 python analysis/fit_opponent_model.py draft-log-2026-10-XX.csv
 ```
 
-It shows which ranking your leaguemates really followed. Tell Claude the result, and the app gets tuned for next year's keeper draft.
+It shows which ranking your leaguemates really followed: the expert consensus (keep Sharp), ESPN's list (switch to Casual or Mixed), or a mix. Tell Claude the result, and the app gets tuned for next year's keeper draft.
 
 ## If something breaks
 - **"python not found":** type `py` instead of `python`.

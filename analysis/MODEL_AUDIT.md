@@ -487,3 +487,66 @@ Run `python pipeline/refresh_espn.py`. It refreshes ESPN's ADP, category ranks a
 
 ### After the draft
 Export the draft log, then run `python analysis/fit_opponent_model.py draft-log-*.csv`. Set `TUNE.catRank` from the best ESPN mix before next year's keeper draft.
+
+
+---
+
+## 18. Ranking sources: what the evidence says (Sept 29, 2026)
+
+**Question:** is the ranking "just ESPN ADP", and which sources should drive player value and the prediction of experienced leaguemates?
+
+### Before this change
+- **Player values:** projections (FanScout/ESPN 50/50) were met halfway with ESPN's market (ESPN ADP plus ESPN category rank).
+- **Opponent model:** 70% ESPN and 30% the app's own rank.
+- **Result:** the app's ranking agreed with ESPN's category rank (0.97) more than with the experts (0.93). In a test league drafting off the expert consensus, the app said Chet Holmgren, Austin Reaves and Trae Young were 99-100% sure to last from 2.06 to 3.06; all three were gone.
+
+### Evidence
+**1. Accuracy on the 2025-26 season** (`analysis/backtest_sources.py`). The sources were:
+- the real preseason expert consensus (FantasyPros roto/category, 8 experts, Oct 18, 2025, from the Internet Archive);
+- ESPN's preseason projections;
+- last season's stats.
+
+ESPN's own 2025-26 rank and ADP have since been overwritten, so they can't be tested.
+
+| Source | Rank correlation with actual 2025-26 value |
+|---|---|
+| Experts | 0.721 |
+| ESPN projection | 0.746 |
+| Last season (reputation) | 0.596 |
+| **Experts + projection, 50/50** | **0.758** |
+
+The blend beats the experts alone by +0.037 (95% interval +0.009 to +0.069). The best weight on the experts is anywhere from 25-50%; the curve is flat there, and the app's halfway market pull (0.5) sits inside it.
+
+**2. Draft backtest in a league drafting off the expert consensus** (`analysis/backtest_experts_league.py`, 2025-26, real weekly results). Projection met halfway with the experts, against projection only, in points of weekly win rate:
+
+| You pick | vs projection only | vs just following the experts |
+|---|---|---|
+| 5th | **+6.5** | +5.6 |
+| 1st | **+3.7** | **+10.9** |
+| 10th | **+7.1** | **+9.0** |
+
+Bold means the 95% interval excludes zero.
+
+**3. Published work.** No comprehensive study of preseason fantasy basketball projection accuracy exists. One peer-reviewed study found professional projections beat naive last-season forecasts only moderately (Springer, *An evaluation of predictions for NBA "Fantasy Sports"*), which matches result 1.
+
+### Changes made
+- **Market for player value:** the FantasyPros expert consensus (6 experts now, including Yahoo's two analysts; refreshed every morning by `pipeline/refresh_fantasypros.py`), then Yahoo ADP, then ESPN. The weight stays 0.5.
+- **Third projection source:** FantasyPros' consensus projections ("all the major projections combined"), a third of per-game stats, half for our own estimates. Games are unchanged. This is justified by the forecast-combination result above; FantasyPros' past projections weren't available to test.
+- **Opponent model: leaguemates as types, not an averaged list.** In each simulated draft, each other manager drafts off the expert consensus (75% on **Sharp**, the new default for this league; 50% Mixed; 0% Casual) or off ESPN's list, with the usual scatter. The "% still there" odds mix the two in the same way.
+
+  Averaging the lists made an in-between ranking nobody drafts from (Chet about 28th, when expert followers take him about 18th and ESPN followers about 58th).
+
+  Calibration on 5-pick test drafts (Brier score, lower is better):
+
+  | League actually drafts off… | App on Sharp | App on Casual |
+  |---|---|---|
+  | The experts | **0.030** | 0.126 |
+  | ESPN | 0.082 | **0.017** |
+
+  Sharp is the better choice whenever there's at least about a 40% chance the league drafts like the experts.
+- **Displays:** the board and cards show "Experts #n"; the ADP tooltip shows ESPN ADP, ESPN category rank, Yahoo ADP and the expert range.
+- **Draft log:** now records the expert rank, and `fit_opponent_model.py` tests the expert consensus and the app's Sharp/Mixed models against your league's real picks.
+
+### After the change
+- **Agreement:** the app's ranking agrees with the experts at 0.97 (was 0.93) and with ESPN's category rank at 0.93 (was 0.97). It still keeps projection-based opinions, such as Kawhi 17th vs the experts' 26th.
+- **Checks:** self-test passes, no console errors, a full practice draft passes the consistency checks, and the stress tests are sensible.

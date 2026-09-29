@@ -14,7 +14,7 @@ from common import load_app, app_players
 def main():
     path = sys.argv[1]
     me = sys.argv[sys.argv.index('--me') + 1] if '--me' in sys.argv else 'Tyler'
-    A = load_app(); P = app_players(A); MKT = A['MKT']
+    A = load_app(); P = app_players(A); MKT = A['MKT']; EXP = A['EXPERTS']
     picks = list(csv.DictReader(open(path, encoding='utf-8')))
     by_name = {p['name']: p for p in P}
     BIG = 250.0
@@ -32,7 +32,14 @@ def main():
         'Yahoo ADP (FantasyPros)': lambda p: p['adp'][0] if p['adp'] else None,
         'ESPN ADP (FantasyPros)': lambda p: p['adp'][1] if p['adp'] else None,
         "app's projection rank": lambda p: p['rank'],
+        'expert consensus (FantasyPros)': lambda p: EXP[p['name']][0] if p['name'] in EXP else None,
     }
+    def opp(w):     # the app's opponent model: w x experts + (1-w) x ESPN anchor
+        def f(p):
+            e = EXP[p['name']][0] if p['name'] in EXP else None; a = mix(0.5)(p)
+            return w * e + (1 - w) * a if e is not None and a is not None else (a if a is not None else e)
+        return f
+    for w, lab in ((0.5, 'Mixed'), (0.75, 'Sharp')): rankers[f"app opponent model: {lab} ({int(w * 100)}% experts)"] = opp(w)
     for w in (0.25, 0.5, 0.75): rankers[f'ESPN mix (category rank weight {w})'] = mix(w)
 
     taken = set(); events = []
@@ -62,8 +69,9 @@ def main():
     print(f"{'ranking':40s} {'log-likelihood':>15s} {'looseness':>10s} {'pick was top-3 left':>20s}")
     for llv, label, tau, top3 in results:
         print(f"{label:40s} {llv:15.1f} {tau:10.0f} {top3:20.0%}")
-    print(f"\nBest fit: {results[0][1]}. Set TUNE.catRank from the best ESPN mix, and compare the looseness with the"
-          " app's scatter (about 3 picks at ADP 15, 8 at ADP 50, 14 at ADP 100).")
+    print(f"\nBest fit: {results[0][1]}. If an expert-heavy ranking fits best, keep 'Your leaguemates' on Sharp; if ESPN"
+          " fits best, use Mixed or Casual. Compare the looseness with the app's scatter (about 3 picks at rank 15,"
+          " 8 at 50, 14 at 100).")
 
 if __name__ == '__main__':
     main()

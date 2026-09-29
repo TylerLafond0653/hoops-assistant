@@ -31,7 +31,8 @@ def load_app():
     rows = [json.loads(l.strip().rstrip(',')) for l in app[i0:i1].split('\n') if l.strip().startswith('["')]
     js = lambda n: json.loads(re.search(r'const %s=(\{.*?\});' % n, app).group(1))
     out = dict(rows=rows, ADP=js('ADP'), AGE=js('AGE'), EST=js('EST'), DIS=js('DISAGREE'), EXP=js('EXP'), LAST=js('LAST'),
-               MKT=js('ESPN_MKT') if 'const ESPN_MKT=' in app else {})
+               MKT=js('ESPN_MKT') if 'const ESPN_MKT=' in app else {},
+               EXPERTS=js('EXPERTS') if 'const EXPERTS=' in app else {})
     out['NEWS'] = {m.group(1).replace("\\'", "'"): m.group(2) for m in re.finditer(r"\['((?:[^'\\]|\\.)+)','(out|watch|ok)'", app)}
     return out
 

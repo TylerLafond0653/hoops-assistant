@@ -16,6 +16,9 @@ Day-to-day entries older than 10 days are counted but not listed: many are lefto
 the summer. (ESPN's fantasy feed also tags about 45 players "day-to-day" with its own "injured" flag off;
 those tags are ignored.) Injury notes stay hand-checked: read the NEW/CHECK lines and update the notes.
 
+It first runs pipeline/refresh_fantasypros.py (the expert consensus and Yahoo/ESPN ADP), so this one command
+refreshes everything.
+
 Run before the draft:   python pipeline/refresh_espn.py            (fetches fresh data)
                         python pipeline/refresh_espn.py --cached   (re-uses the newest cached data)
 """
@@ -155,6 +158,8 @@ def replace_block(app, name, js):
 
 def main():
     cached = '--cached' in sys.argv
+    import refresh_fantasypros          # the expert consensus and Yahoo/ESPN ADP (FantasyPros)
+    refresh_fantasypros.main(cached)
     path = newest_cached() if cached else fetch()
     asof = re.search(r'(\d{4}-\d{2}-\d{2})', os.path.basename(path)).group(1)
     d = json.load(open(path, encoding='utf-8'))
