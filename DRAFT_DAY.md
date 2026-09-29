@@ -15,13 +15,18 @@ python pipeline/refresh_espn.py
 
 This updates, inside `draft-room.html`:
 - ESPN's live ADP and ESPN's category rankings (who your leaguemates will take);
+- every player's current team (signings and trades are applied automatically);
 - last season's stats;
 - players ESPN drafts who aren't on the app's list.
 
-It then prints a report. Check its `team:` and `injury:` lines:
-- **team:** the player changed teams. Tell Claude, and the app's team for him gets fixed.
-- **injury OUT:** check the news. If it's real and not already an injury note on the board, tell Claude to add it.
-- **injury DAY_TO_DAY:** usually left over from last season, so it can be ignored.
+It then prints an **injury check** from ESPN's official NBA injury report, compared with the app's injury notes:
+- **[NEW]:** injury news the app doesn't have yet.
+- **[CHECK]:** ESPN has newer news than the app's note.
+- **[noted]:** already in the app, so nothing to do.
+
+If the last line says **"Nothing new"**, you're done. Otherwise, copy the NEW and CHECK lines to Claude so the app's injury notes (and projected games, for long injuries) get updated.
+
+Old "day-to-day" tags from last season or the summer are skipped on purpose; they aren't current injuries.
 
 ## 3. Open the app
 In the VS Code file list, right-click `draft-room.html` and choose **Reveal in File Explorer**. Double-click the file to open it in Chrome or Edge. It works offline, and nothing needs installing.

@@ -63,9 +63,28 @@ value_at = lambda a: VT[max(0, min(len(VT) - 1, round(a) - 1))]
 POSBIT = {'PG': 1, 'SG': 2, 'SF': 4, 'PF': 8, 'C': 16}
 for p in pool: p['mask'] = sum(POSBIT[x] for x in set(p['pos']))
 
+ECR = None   # the real preseason expert consensus (2025-26 only), loaded on first use
+
+
+def load_experts():
+    """FantasyPros roto/category expert consensus archived Oct 19, 2025: {key: rank}"""
+    s = open(os.path.join(DATA, 'fp_ecr_2025-10-19.html'), encoding='utf-8', errors='replace').read()
+    i = s.index('ecrData =') + len('ecrData ='); j = s.index('};', i) + 1
+    return {key(p['player_name']): float(p['rank_ecr']) for p in json.loads(s[i:j].strip())['players']}
+
+
 def set_market(kind):
-    for p in pool:
-        p['m'] = p['vs'] if kind == 'projection' or p['vlast'] is None else 0.5 * p['vs'] + 0.5 * p['vlast']
+    """kind: 'reputation' (half projection, half last season), 'projection', or 'experts' (the real
+    preseason expert consensus; 2025-26 only)"""
+    global ECR
+    if kind == 'experts':
+        assert SEASON == 2026, 'the archived expert consensus is for 2025-26'
+        ECR = ECR or load_experts()
+        for i, p in enumerate(sorted(pool, key=lambda p: -p['vs'])):
+            p['m'] = -ECR.get(key(p['name']), 400 + i)     # players the experts didn't rank go after those they did
+    else:
+        for p in pool:
+            p['m'] = p['vs'] if kind == 'projection' or p['vlast'] is None else 0.5 * p['vs'] + 0.5 * p['vlast']
     order = sorted(range(NP), key=lambda i: -pool[i]['m'])
     for r, i in enumerate(order): pool[i]['mrank'] = r + 1
     for p in pool:   # the simulator's effZ: meet the market halfway on total value

@@ -1,0 +1,33 @@
+
+== league drafting off the expert consensus, you pick 5 ==
+   follow the experts           weekly win 61.0%
+   projection only              weekly win 60.1%
+   projection + experts (app)   weekly win 66.5%
+   app + don't-reach rule       weekly win 67.7%
+   app + whole-team picks       weekly win 66.7%
+   projection + experts (app)   vs projection only              +6.5% (+1.7% to +11.1%)  <- clear
+   projection + experts (app)   vs follow the experts           +5.6% (-1.1% to +11.8%)
+   app + don't-reach rule       vs projection + experts (app)   +1.1% (-1.0% to +3.5%)
+   app + whole-team picks       vs projection + experts (app)   +0.2% (-2.7% to +3.4%)
+
+== league drafting off the expert consensus, you pick 1 ==
+   follow the experts           weekly win 64.3%
+   projection only              weekly win 71.6%
+   projection + experts (app)   weekly win 75.3%
+   app + don't-reach rule       weekly win 75.7%
+   app + whole-team picks       weekly win 73.1%
+   projection + experts (app)   vs projection only              +3.7% (+0.1% to +7.5%)  <- clear
+   projection + experts (app)   vs follow the experts           +10.9% (+3.8% to +17.4%)  <- clear
+   app + don't-reach rule       vs projection + experts (app)   +0.4% (-0.4% to +1.3%)
+   app + whole-team picks       vs projection + experts (app)   -2.2% (-3.7% to -0.7%)  <- clear
+
+== league drafting off the expert consensus, you pick 10 ==
+   follow the experts           weekly win 56.0%
+   projection only              weekly win 57.9%
+   projection + experts (app)   weekly win 64.9%
+   app + don't-reach rule       weekly win 61.6%
+   app + whole-team picks       weekly win 64.4%
+   projection + experts (app)   vs projection only              +7.1% (+1.6% to +12.7%)  <- clear
+   projection + experts (app)   vs follow the experts           +9.0% (+2.1% to +15.1%)  <- clear
+   app + don't-reach rule       vs projection + experts (app)   -3.3% (-5.5% to -1.0%)  <- clear
+   app + whole-team picks       vs projection + experts (app)   -0.5% (-5.4% to +4.8%)

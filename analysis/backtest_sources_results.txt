@@ -1,0 +1,17 @@
+experts: 373 players, 8 experts, updated 10/18/2025
+evaluation set: 188 players ranked top-150 by at least one source
+
+source                              n     rank corr (95% CI)   avg actual value of its top 30 / 60 / 120
+experts (Oct 2025)                179    0.721 (0.64-0.78)     +1.57  +0.14  -1.60
+ESPN projection                   180    0.746 (0.67-0.81)     +2.04  +0.24  -1.61
+last season (2024-25)             186    0.596 (0.50-0.69)     +1.14  -0.52  -1.81
+experts + ESPN projection         177    0.758 (0.68-0.82)     +1.84  +0.22  -1.64
+experts + last season             178    0.678 (0.58-0.76)     +1.66  +0.09  -1.84
+ESPN projection + last season     178    0.665 (0.56-0.75)     +1.44  +0.09  -1.83
+
+paired difference in rank correlation vs the experts (same players; 95% bootstrap):
+  ESPN projection                  +0.022 (-0.031 to +0.079)
+  last season (2024-25)            -0.111 (-0.184 to -0.040)  <- clear
+  experts + ESPN projection        +0.037 (+0.009 to +0.069)  <- clear
+  experts + last season            -0.045 (-0.108 to +0.005)
+  ESPN projection + last season    -0.058 (-0.120 to +0.003)
