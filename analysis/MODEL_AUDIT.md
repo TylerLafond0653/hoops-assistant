@@ -1,6 +1,6 @@
 # Hoops Draft Room model audit (Sept 25, 2026)
 
-> **Reading guide:** sections 1–16 describe the model as it was audited on Sept 25. The changes made since, and the evidence behind each, are in **§17** (the audit fixes) and **§18** (the ranking sources: expert consensus as the market, FantasyPros projections, leaguemates as expert/ESPN types). The current app follows §17–18. **§19** is a stress test against leaguemates who commit to builds and make mistakes.
+> **Reading guide:** sections 1–16 describe the model as it was audited on Sept 25. The changes made since, and the evidence behind each, are in **§17** (the audit fixes) and **§18** (the ranking sources: expert consensus as the market, FantasyPros projections, leaguemates as expert/ESPN types). The current app follows §17–18. **§19** is a stress test against leaguemates who commit to builds and make mistakes, and the simulator fixes it led to (category-aware punt plans, leaguemates who keep their plan, the "Playing as" label).
 
 **Question audited:** given the current draft state, does the app pick the player with the highest expected value for your roster in a 10-team, 9-category head-to-head (H2H) keeper league?
 
@@ -624,11 +624,66 @@ The board-order strategy landed between the app and the experts; the full output
 | Control | 11.2 wins, 81% playoffs | 8.5 wins, 50% playoffs |
 | Builds | 11.5 wins, 83% playoffs | 9.3 wins, 61% playoffs |
 
-**Holes found**
+**Holes found** (all four fixed the same day; see *Fixes* below)
 1. **Plan name.** The plan name can stay "Balanced" after the roster has become a guard team: in the bigs rush it was 9th-10th in rebounds and blocks. The card's "Already losing" line reports it, but the headline doesn't.
 2. **Punt plans in the simulator.** They draft greedily for their categories, so Punt FT% turns into a full big-man build that is also 10th in points, assists and threes. The simulator therefore compares Balanced against a badly run punt, which is part of why the app rarely suggests punts other than Punt AST. A well-run punt hasn't been tested.
 3. **Opponent model.** The simulator's leaguemates draft off the rankings and don't keep following the builds their rosters show. This didn't stop the app from adapting here, because the look-ahead scores against the real rosters already drafted.
-4. **Encoding bug (fixed).** `draft-room.html` had no `<meta charset="utf-8">`. Chrome guesses UTF-8 when the file is opened by double-click, but when served or guessed differently the whole script failed on the accent-stripping regex. Added.
+4. **Encoding bug.** `draft-room.html` had no `<meta charset="utf-8">`. Chrome guesses UTF-8 when the file is opened by double-click, but when served or guessed differently the whole script failed on the accent-stripping regex.
+
+### Fixes (Sept 29, 2026)
+
+**1. Plan name.** Once a category is lost in over 70% of simulated weeks (the "Already losing" rule), the headline gets a tag naming the build the roster really plays like. The tag is the build sharing the most given-up categories, and it must share at least half of them, for example "Playing as Guard build" or "Playing as Punt BLK". Otherwise the tag reads "Also giving up …". The first-timer guide explains it.
+
+In the stress leagues:
+- **Guards rush:** "Playing as Punt AST" from round 4.
+- **Bigs rush:** "Playing as Punt BLK" from round 9. Before that the team still won rebounds in 30-40% of weeks, so it wasn't giving them up yet.
+
+**2. Punt plans play the categories they can still win** (`TUNE.dynW`). In the simulator, your future picks weigh each category by how much one more unit of it moves your weekly matchups against the other nine teams' projected final rosters, on top of the plan's weights:
+- the weight is a normal density at the projected gap;
+- the spread is the measured weekly swing, plus projection misses, plus the picks still to come.
+
+A category you already win easily, or can't win, counts for less, so a plan stops piling onto one kind of player.
+
+Real-season test: `analysis/backtest_dynamic.py`, results in `backtest_dynamic_results.txt`. It replays drafts from preseason information and scores them on real weekly results: 3 seasons, picks 1/5/10, and the expert market for 2025-26. Weekly win rate, averaged over the 12 runs:
+
+| Plan | Fixed weights (before) | Category-aware (now) |
+|---|---|---|
+| Balanced | 64.5% | 65.9% (+1.3; ahead in 7 of 12 runs, tied in 1, behind in 4, two of them by 5+ points: 2024-25 from pick 1 and the 2025-26 expert market from pick 10) |
+| Punt FT% | 27.3% | 54.0% (+26.7; ahead in 12 of 12) |
+| Punt TO | 53.2% | 58.7% (+5.5; ahead in 10 of 12) |
+
+A half-strength version (multipliers square-rooted) did slightly worse overall, so `dynW` is 1.
+
+**3. Leaguemates keep drafting toward their plan** (`TUNE.oppBuilds`). A leaguemate's lean (`teamLean`, from 3 players) becomes category weights relative to a neutral roster. Among the next five players on their list, they take the best fit, giving up 0.3 value points per spot they reach. A balanced drafter's lean is near zero, so he still follows his list.
+
+A cutoff of "50% sure of one build" almost never fired, because `teamLean` spreads a real lean over similar builds (a big-man drafter reads about 25% Big-man build and 20% Punt FT%). So the whole mix is used.
+
+**4. Encoding.** Added `<meta charset="utf-8">`.
+
+**The whole app, before vs after.** Same 5 leagues and 4 drafts each, with seeds paired so only the app changed. Your wins over 19 weeks:
+
+| League | Before | Fix 2 only | Fixes 2 + 3 (now) |
+|---|---|---|---|
+| Control | 12.9 | 12.8 | 12.7 |
+| Builds | 12.1 | 12.5 | 12.7 |
+| Messy | 13.4 | 13.4 | 13.5 |
+| Bigs rush | 13.1 | 13.1 | 13.4 |
+| Guards rush | 11.7 | 12.0 | 11.8 |
+| **Change, app's view** | | +0.14 ± 0.10 | **+0.19 ± 0.10** |
+| **Change, if the experts are right** | | +0.05 ± 0.11 | **+0.30 ± 0.14** |
+
+Playoff odds rose about 1 point. The gains come from leagues where people commit to builds. The balanced control league is flat within noise (-0.3 ± about 0.3).
+
+**Giannis, then Duren** (control league, 4 drafts):
+- **Committing to Punt FT%:** 8.5 wins and 50% playoffs before; 10.6 wins and 74% playoffs now.
+- **Following the app:** it still stays Balanced and repairs FT%, at 11.0 wins and 80% playoffs.
+
+The comparison between the two is now fair: the punt plan is played sensibly and still loses narrowly.
+
+**Checks**
+- **Speed:** the slowest pick took 2.4 s (usually 0.5-2 s).
+- **App:** the self-test passes with no console errors.
+- **Old behavior:** setting `TUNE.dynW` to 0 and `TUNE.oppBuilds` to false restores the previous simulator exactly.
 
 **Limits**
 - All three views of "true" are built from the same projection data. The experts-are-right column is the skeptical check, and there the pure expert list edges the app by 0.2-0.8 wins.

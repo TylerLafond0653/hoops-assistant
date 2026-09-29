@@ -1,0 +1,120 @@
+
+== 2023-24, market=reputation, pick 5, 150 drafts: weekly win ==
+   FIX_BAL 59.3%  DYN_BAL 63.6%  HALF_BAL 61.9%  FIX_FT 19.0%  DYN_FT 50.1%  HALF_FT 46.1%  FIX_TO 38.0%  DYN_TO 51.3%  HALF_TO 45.3%  TEAM_G 62.8%
+   DYN_BAL - FIX_BAL : +4.3%  (95% week-bootstrap +1.6% to +7.1%)  <- clear
+   HALF_BAL- FIX_BAL : +2.7%  (95% week-bootstrap +0.5% to +4.8%)  <- clear
+   DYN_FT  - FIX_FT  : +31.1%  (95% week-bootstrap +23.7% to +38.1%)  <- clear
+   HALF_FT - FIX_FT  : +27.0%  (95% week-bootstrap +20.2% to +34.0%)  <- clear
+   DYN_TO  - FIX_TO  : +13.3%  (95% week-bootstrap +6.9% to +19.8%)  <- clear
+   HALF_TO - FIX_TO  : +7.3%  (95% week-bootstrap +3.6% to +11.3%)  <- clear
+   TEAM_G  - FIX_BAL : +3.5%  (95% week-bootstrap -1.4% to +8.6%)
+
+== 2023-24, market=reputation, pick 1, 75 drafts: weekly win ==
+   FIX_BAL 66.3%  DYN_BAL 70.6%  HALF_BAL 68.8%  FIX_FT 27.4%  DYN_FT 62.2%  HALF_FT 57.3%  FIX_TO 43.8%  DYN_TO 54.7%  HALF_TO 52.7%  TEAM_G 64.9%
+   DYN_BAL - FIX_BAL : +4.3%  (95% week-bootstrap +1.8% to +6.7%)  <- clear
+   HALF_BAL- FIX_BAL : +2.5%  (95% week-bootstrap +0.2% to +4.7%)  <- clear
+   DYN_FT  - FIX_FT  : +34.8%  (95% week-bootstrap +28.9% to +40.8%)  <- clear
+   HALF_FT - FIX_FT  : +30.0%  (95% week-bootstrap +23.8% to +36.3%)  <- clear
+   DYN_TO  - FIX_TO  : +10.9%  (95% week-bootstrap +6.0% to +16.1%)  <- clear
+   HALF_TO - FIX_TO  : +8.9%  (95% week-bootstrap +4.7% to +13.4%)  <- clear
+   TEAM_G  - FIX_BAL : -1.4%  (95% week-bootstrap -6.4% to +3.5%)
+
+== 2023-24, market=reputation, pick 10, 75 drafts: weekly win ==
+   FIX_BAL 54.6%  DYN_BAL 61.6%  HALF_BAL 59.2%  FIX_FT 24.2%  DYN_FT 54.4%  HALF_FT 47.1%  FIX_TO 42.5%  DYN_TO 50.6%  HALF_TO 46.1%  TEAM_G 65.4%
+   DYN_BAL - FIX_BAL : +6.9%  (95% week-bootstrap +3.7% to +9.9%)  <- clear
+   HALF_BAL- FIX_BAL : +4.6%  (95% week-bootstrap +0.9% to +8.0%)  <- clear
+   DYN_FT  - FIX_FT  : +30.2%  (95% week-bootstrap +23.4% to +36.9%)  <- clear
+   HALF_FT - FIX_FT  : +22.9%  (95% week-bootstrap +15.7% to +29.8%)  <- clear
+   DYN_TO  - FIX_TO  : +8.0%  (95% week-bootstrap +3.6% to +12.5%)  <- clear
+   HALF_TO - FIX_TO  : +3.5%  (95% week-bootstrap +0.5% to +6.6%)  <- clear
+   TEAM_G  - FIX_BAL : +10.7%  (95% week-bootstrap +6.1% to +15.3%)  <- clear
+
+== 2024-25, market=reputation, pick 5, 150 drafts: weekly win ==
+   FIX_BAL 57.4%  DYN_BAL 60.3%  HALF_BAL 56.9%  FIX_FT 22.5%  DYN_FT 50.4%  HALF_FT 46.2%  FIX_TO 52.8%  DYN_TO 57.4%  HALF_TO 55.9%  TEAM_G 56.5%
+   DYN_BAL - FIX_BAL : +3.0%  (95% week-bootstrap -2.7% to +8.4%)
+   HALF_BAL- FIX_BAL : -0.5%  (95% week-bootstrap -3.1% to +2.0%)
+   DYN_FT  - FIX_FT  : +27.9%  (95% week-bootstrap +21.9% to +34.1%)  <- clear
+   HALF_FT - FIX_FT  : +23.7%  (95% week-bootstrap +18.9% to +28.5%)  <- clear
+   DYN_TO  - FIX_TO  : +4.6%  (95% week-bootstrap +2.2% to +7.2%)  <- clear
+   HALF_TO - FIX_TO  : +3.1%  (95% week-bootstrap +1.1% to +5.2%)  <- clear
+   TEAM_G  - FIX_BAL : -0.8%  (95% week-bootstrap -6.8% to +4.8%)
+
+== 2024-25, market=reputation, pick 1, 75 drafts: weekly win ==
+   FIX_BAL 67.3%  DYN_BAL 61.7%  HALF_BAL 62.5%  FIX_FT 21.8%  DYN_FT 49.4%  HALF_FT 46.7%  FIX_TO 59.1%  DYN_TO 60.9%  HALF_TO 60.6%  TEAM_G 70.4%
+   DYN_BAL - FIX_BAL : -5.5%  (95% week-bootstrap -11.3% to +0.5%)
+   HALF_BAL- FIX_BAL : -4.7%  (95% week-bootstrap -9.8% to +0.9%)
+   DYN_FT  - FIX_FT  : +27.5%  (95% week-bootstrap +19.6% to +35.7%)  <- clear
+   HALF_FT - FIX_FT  : +24.9%  (95% week-bootstrap +18.5% to +31.4%)  <- clear
+   DYN_TO  - FIX_TO  : +1.8%  (95% week-bootstrap -0.7% to +4.5%)
+   HALF_TO - FIX_TO  : +1.5%  (95% week-bootstrap -0.5% to +3.7%)
+   TEAM_G  - FIX_BAL : +3.1%  (95% week-bootstrap -3.7% to +10.2%)
+
+== 2024-25, market=reputation, pick 10, 75 drafts: weekly win ==
+   FIX_BAL 53.3%  DYN_BAL 57.2%  HALF_BAL 58.0%  FIX_FT 20.5%  DYN_FT 47.2%  HALF_FT 45.0%  FIX_TO 51.0%  DYN_TO 55.9%  HALF_TO 52.5%  TEAM_G 58.0%
+   DYN_BAL - FIX_BAL : +4.0%  (95% week-bootstrap +0.7% to +7.3%)  <- clear
+   HALF_BAL- FIX_BAL : +4.8%  (95% week-bootstrap +1.9% to +7.6%)  <- clear
+   DYN_FT  - FIX_FT  : +26.7%  (95% week-bootstrap +20.0% to +33.5%)  <- clear
+   HALF_FT - FIX_FT  : +24.5%  (95% week-bootstrap +19.6% to +29.5%)  <- clear
+   DYN_TO  - FIX_TO  : +4.8%  (95% week-bootstrap +1.1% to +8.7%)  <- clear
+   HALF_TO - FIX_TO  : +1.5%  (95% week-bootstrap -1.6% to +4.8%)
+   TEAM_G  - FIX_BAL : +4.7%  (95% week-bootstrap +1.0% to +8.6%)  <- clear
+
+== 2025-26, market=reputation, pick 5, 150 drafts: weekly win ==
+   FIX_BAL 67.4%  DYN_BAL 70.5%  HALF_BAL 70.0%  FIX_FT 29.3%  DYN_FT 60.1%  HALF_FT 58.6%  FIX_TO 61.8%  DYN_TO 70.5%  HALF_TO 65.4%  TEAM_G 72.7%
+   DYN_BAL - FIX_BAL : +3.2%  (95% week-bootstrap -0.4% to +6.8%)
+   HALF_BAL- FIX_BAL : +2.7%  (95% week-bootstrap +0.3% to +5.1%)  <- clear
+   DYN_FT  - FIX_FT  : +30.8%  (95% week-bootstrap +23.8% to +36.9%)  <- clear
+   HALF_FT - FIX_FT  : +29.2%  (95% week-bootstrap +22.6% to +34.9%)  <- clear
+   DYN_TO  - FIX_TO  : +8.6%  (95% week-bootstrap +5.9% to +11.2%)  <- clear
+   HALF_TO - FIX_TO  : +3.6%  (95% week-bootstrap +0.7% to +6.4%)  <- clear
+   TEAM_G  - FIX_BAL : +5.3%  (95% week-bootstrap +1.2% to +9.5%)  <- clear
+
+== 2025-26, market=reputation, pick 1, 75 drafts: weekly win ==
+   FIX_BAL 74.4%  DYN_BAL 73.5%  HALF_BAL 73.0%  FIX_FT 39.1%  DYN_FT 67.1%  HALF_FT 71.1%  FIX_TO 64.4%  DYN_TO 72.8%  HALF_TO 68.2%  TEAM_G 78.3%
+   DYN_BAL - FIX_BAL : -0.8%  (95% week-bootstrap -4.2% to +2.5%)
+   HALF_BAL- FIX_BAL : -1.4%  (95% week-bootstrap -3.6% to +0.7%)
+   DYN_FT  - FIX_FT  : +27.9%  (95% week-bootstrap +19.1% to +36.1%)  <- clear
+   HALF_FT - FIX_FT  : +32.0%  (95% week-bootstrap +26.5% to +37.2%)  <- clear
+   DYN_TO  - FIX_TO  : +8.4%  (95% week-bootstrap +5.4% to +11.7%)  <- clear
+   HALF_TO - FIX_TO  : +3.8%  (95% week-bootstrap +1.0% to +6.6%)  <- clear
+   TEAM_G  - FIX_BAL : +4.0%  (95% week-bootstrap +0.3% to +7.4%)  <- clear
+
+== 2025-26, market=reputation, pick 10, 75 drafts: weekly win ==
+   FIX_BAL 67.5%  DYN_BAL 69.9%  HALF_BAL 73.4%  FIX_FT 29.4%  DYN_FT 59.7%  HALF_FT 55.8%  FIX_TO 55.7%  DYN_TO 63.7%  HALF_TO 59.0%  TEAM_G 74.3%
+   DYN_BAL - FIX_BAL : +2.4%  (95% week-bootstrap -2.3% to +7.3%)
+   HALF_BAL- FIX_BAL : +5.8%  (95% week-bootstrap +3.7% to +8.0%)  <- clear
+   DYN_FT  - FIX_FT  : +30.3%  (95% week-bootstrap +23.8% to +36.3%)  <- clear
+   HALF_FT - FIX_FT  : +26.4%  (95% week-bootstrap +20.6% to +31.8%)  <- clear
+   DYN_TO  - FIX_TO  : +8.0%  (95% week-bootstrap +4.8% to +11.0%)  <- clear
+   HALF_TO - FIX_TO  : +3.3%  (95% week-bootstrap -0.3% to +6.6%)
+   TEAM_G  - FIX_BAL : +6.8%  (95% week-bootstrap +1.8% to +11.6%)  <- clear
+
+== 2025-26, market=experts, pick 5, 150 drafts: weekly win ==
+   FIX_BAL 66.3%  DYN_BAL 66.2%  HALF_BAL 67.1%  FIX_FT 31.7%  DYN_FT 47.7%  HALF_FT 51.5%  FIX_TO 57.8%  DYN_TO 53.7%  HALF_TO 54.1%  TEAM_G 62.8%
+   DYN_BAL - FIX_BAL : -0.1%  (95% week-bootstrap -2.5% to +2.3%)
+   HALF_BAL- FIX_BAL : +0.8%  (95% week-bootstrap -1.0% to +2.7%)
+   DYN_FT  - FIX_FT  : +16.0%  (95% week-bootstrap +8.4% to +23.2%)  <- clear
+   HALF_FT - FIX_FT  : +19.8%  (95% week-bootstrap +13.5% to +26.0%)  <- clear
+   DYN_TO  - FIX_TO  : -4.1%  (95% week-bootstrap -6.0% to -2.2%)  <- clear
+   HALF_TO - FIX_TO  : -3.7%  (95% week-bootstrap -5.6% to -1.9%)  <- clear
+   TEAM_G  - FIX_BAL : -3.5%  (95% week-bootstrap -7.1% to +0.7%)
+
+== 2025-26, market=experts, pick 1, 75 drafts: weekly win ==
+   FIX_BAL 75.3%  DYN_BAL 75.4%  HALF_BAL 76.4%  FIX_FT 35.2%  DYN_FT 53.4%  HALF_FT 56.7%  FIX_TO 59.1%  DYN_TO 59.1%  HALF_TO 58.4%  TEAM_G 71.7%
+   DYN_BAL - FIX_BAL : +0.0%  (95% week-bootstrap -1.8% to +1.9%)
+   HALF_BAL- FIX_BAL : +1.1%  (95% week-bootstrap -0.2% to +2.3%)
+   DYN_FT  - FIX_FT  : +18.1%  (95% week-bootstrap +10.1% to +25.8%)  <- clear
+   HALF_FT - FIX_FT  : +21.5%  (95% week-bootstrap +15.0% to +27.7%)  <- clear
+   DYN_TO  - FIX_TO  : +0.0%  (95% week-bootstrap -2.3% to +2.4%)
+   HALF_TO - FIX_TO  : -0.6%  (95% week-bootstrap -2.2% to +0.8%)
+   TEAM_G  - FIX_BAL : -3.7%  (95% week-bootstrap -7.0% to -0.4%)  <- clear
+
+== 2025-26, market=experts, pick 10, 75 drafts: weekly win ==
+   FIX_BAL 65.2%  DYN_BAL 59.8%  HALF_BAL 61.5%  FIX_FT 27.9%  DYN_FT 46.8%  HALF_FT 50.4%  FIX_TO 52.4%  DYN_TO 53.3%  HALF_TO 53.4%  TEAM_G 61.6%
+   DYN_BAL - FIX_BAL : -5.4%  (95% week-bootstrap -10.5% to -0.2%)  <- clear
+   HALF_BAL- FIX_BAL : -3.7%  (95% week-bootstrap -8.7% to +1.1%)
+   DYN_FT  - FIX_FT  : +18.9%  (95% week-bootstrap +12.3% to +25.3%)  <- clear
+   HALF_FT - FIX_FT  : +22.5%  (95% week-bootstrap +16.6% to +28.5%)  <- clear
+   DYN_TO  - FIX_TO  : +0.9%  (95% week-bootstrap -1.1% to +3.0%)
+   HALF_TO - FIX_TO  : +1.0%  (95% week-bootstrap -0.8% to +2.7%)
+   TEAM_G  - FIX_BAL : -3.6%  (95% week-bootstrap -10.0% to +2.4%)

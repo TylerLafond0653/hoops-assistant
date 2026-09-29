@@ -206,6 +206,7 @@ kbd{font-family:var(--body);font-size:11.5px;font-weight:600;border:1px solid va
 .lvl.medium{background:var(--warn-soft);color:var(--warn)}
 .lvl.hard{background:var(--bad-soft);color:var(--bad)}
 .sure{font-weight:700;font-size:12.5px;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.shape{font-weight:700;font-size:12.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line-strong);color:var(--ink);white-space:nowrap}
 .sure.hi{background:var(--good-soft);color:var(--good)}
 .sure.mid{background:var(--warn-soft);color:var(--warn)}
 .sure.lo{background:var(--surface-2);color:var(--muted)}
@@ -1321,9 +1322,11 @@ function teamLean(t){
   return softmax(v.map((x,j)=>(x-avg)*firm*4+(BUILDS[j].id==='bal'?0.4:0)));
 }
 // ---- draft simulator ----
-// Plays the rest of the draft out many times from where it stands. Other managers take players by
-// ADP with realistic scatter (about ±2 picks at the top, ±10 around pick 70); you draft for one
-// build at a time from your real draft slots. Every finished roster is then played head-to-head
+// Plays the rest of the draft out many times from where it stands. Other managers take players off
+// the expert or ESPN list with realistic scatter (about ±2 picks at the top, ±10 around pick 70),
+// reaching for their plan when their picks lean toward one; you draft for one build at a time from
+// your real draft slots, weighing categories by what they still do for your matchups (TUNE.dynW).
+// Every finished roster is then played head-to-head
 // against the other nine, week-style, so each build gets a "weekly matchups won" figure. The league
 // charter scores each week as one win/loss/tie by number of categories won (H2H Most Categories),
 // which is what matchup() estimates: the chance of winning 5+ of the 9. Weekly spreads per category
@@ -1341,6 +1344,10 @@ const TUNE={
   projSd:2.2,      // typical projection miss in season value (ESPN alone missed by 2.3-2.5 in each of the last
                    // 3 seasons; averaging with FanScout should cut that a little). Larger for rookies, estimates, injuries.
   ageNow:-0.4,     // this-season adjustment for players 31+ (they missed their projections by ~0.4 more)
+  dynW:1,          // your future picks in the simulator weigh each category by how much it still moves your weekly
+                   // matchups (1 = fully, 0 = the plan's fixed weights). Real-season backtest: +4 to +7 points of
+                   // weekly wins for Balanced and +30 for Punt FT% over fixed weights (analysis/backtest_dynamic.py)
+  oppBuilds:true,  // simulated leaguemates whose picks lean toward a plan keep drafting toward it
 };
 const WEEK_SD=TUNE.weekSd;
 // Week-to-week spread of each category's team total, measured on three seasons of real box scores with
@@ -1505,7 +1512,7 @@ const bitCount=m=>{let c=0;while(m){m&=m-1;c++}return c};
 // rising to about 2 when you have barely enough picks left to fill every empty spot.
 const posBonus=(open,picksLeft)=>0.5+1.5*Math.min(1,open/Math.max(1,picksLeft));
 function simBuilds(team=me(),fw=futureW(),salt='',NS=120,seed=''){
-  const key=[S.order.map(p=>p+':'+S.board[p]).join(','),[...KS.map].join(','),S.site,S.savvy,fw,team,salt,NS,seed,S.teams,S.slot,S.rounds,S.reversal,players().length,players()[0]&&players()[0].name].join('|');
+  const key=[S.order.map(p=>p+':'+S.board[p]).join(','),[...KS.map].join(','),S.site,S.savvy,fw,team,salt,NS,seed,S.teams,S.slot,S.rounds,S.reversal,players().length,players()[0]&&players()[0].name,TUNE.dynW,TUNE.oppBuilds].join('|');
   if(SIMC.key===key)return SIMC;
   if(SIMM.has(key))return SIMM.get(key);
   const T=total(),mine=team,R=replProfile(),nb=BUILDS.length;
@@ -1522,6 +1529,26 @@ function simBuilds(team=me(),fw=futureW(),salt='',NS=120,seed=''){
   const PS=pool.map(x=>x.phantom?TUNE.projSd:projSd(x));
   const V=BUILDS.map(b=>E.map(e=>CATS.reduce((s,c,k)=>s+b.w[c]*e[k],0)));
   const SD=buildNorm().map(n=>n.sd);
+  // Your future picks weigh each category by what it still does for your weekly matchups (TUNE.dynW). Fixed plan
+  // weights never notice a category you already win easily or can't win at all, so Punt FT% kept stacking bigs until
+  // it also lost points, assists and threes. Here each category counts by how close your projected final total is to
+  // each other team's (a normal density at the gap: the weekly spread plus projection misses (11.4) plus the picks
+  // still to come), on top of the plan's own weights. The rest of each roster is filled at the average of the players
+  // the rest of the draft takes (FILL).
+  const BW=BUILDS.map(b=>CATS.map(c=>b.w[c])),DYN=TUNE.dynW>0,WSD2=WEEK_SD_CAT.map(x=>(x*TUNE.weekSd)**2);
+  const FILL=CATS.map((_,q)=>{let t=0,c=0;for(const i of byAdp){if(c>=open.length)break;t+=E[i][q];c++}return c?t/c:0});
+  const BT=new Float64Array(N()*9),BC=baseTeams.map(tm=>tm.length);
+  baseTeams.forEach((tm,t)=>tm.forEach(b=>{for(let q=0;q<9;q++)BT[t*9+q]+=b.e[q]}));
+  // Leaguemates whose picks lean toward a plan keep drafting toward it (TUNE.oppBuilds). Their lean (teamLean, 3+
+  // players) becomes category weights relative to a neutral roster's: a big-man drafter counts free throws, assists and
+  // threes for less and boards, blocks and FG% for more. Among the next five players on their list they take the best
+  // fit, giving up 0.3 value points per spot they reach, so a balanced drafter still follows the list and a committed
+  // one reaches for his build. (teamLean spreads a clear lean over similar builds, so the whole mix is used.)
+  const LEAN0=softmax(BUILDS.map(b=>b.id==='bal'?0.4:0));
+  const OF=Array.from({length:N()},(_,t)=>{
+    if(t===mine||!TUNE.oppBuilds||BC[t]<3)return null;const pr=teamLean(t);if(!pr)return null;
+    const d=CATS.map(c=>BUILDS.reduce((x,b,k)=>x+(pr[k]-LEAN0[k])*b.w[c],0));
+    return E.map(e=>d.reduce((x,w,q)=>x+w*e[q],0))});
   // a lineup has one C slot plus UTIL/bench, so cap how many center-only players you stack
   const pureC=pool.map(x=>!x.phantom&&x.pos.length===1&&x.pos[0]==='C');
   const myC0=rosterOf(mine).filter(x=>x.p.pos.length===1&&x.p.pos[0]==='C').length;
@@ -1561,7 +1588,7 @@ function simBuilds(team=me(),fw=futureW(),salt='',NS=120,seed=''){
     // every build faces the same draft by the other managers, so builds are compared fairly
     const ordE=pool.map((_,i)=>i).sort((a,b)=>scE[a]-scE[b]),ordS=pool.map((_,i)=>i).sort((a,b)=>scS[a]-scS[b]),typ=TYP[s];
     for(let j=0;j<nb;j++){
-      const taken=new Uint8Array(P),picked=Array.from({length:N()},()=>[]);
+      const taken=new Uint8Array(P),picked=Array.from({length:N()},()=>[]),TT=Float64Array.from(BT),CNT=BC.slice();
       let pE=0,pS=0,mi=0,myC=myC0,have=have0;const kvs=baseKV.slice();
       for(let k=0;k<open.length;k++){
         const t=teamAt(open[k]);let pick=-1;
@@ -1570,9 +1597,19 @@ function simBuilds(team=me(),fw=futureW(),salt='',NS=120,seed=''){
           // filling an empty starting spot. Take whoever you'd lose the most by passing on: his edge
           // over what you'd get next turn anyway, times the chance he's gone by then.
           const g=gap[mi]||0,kvr=KVR.get(myRound[mi]),pb=posBonus(5-bitCount(have),myIdx.length-mi);let n=0,ahead=0;
+          let wq=null;
+          if(DYN){
+            const rest=S.rounds-CNT[mine],m=new Float64Array(9);
+            for(let o=0;o<N();o++){if(o===mine)continue;
+              for(let q=0;q<9;q++){const d=TT[mine*9+q]-TT[o*9+q]+(CNT[o]-CNT[mine])*FILL[q],v=WSD2[q]+11.4+1.6*rest;m[q]+=Math.exp(-d*d/(2*v))/Math.sqrt(v)}}
+            let tot=0,cn=0;for(let q=0;q<9;q++)if(BW[j][q]>0){tot+=m[q];cn++}
+            wq=BW[j].map((w,q)=>w*Math.pow(m[q]*cn/tot,TUNE.dynW));
+          }
           for(const i of byAdp){
             if(taken[i])continue;
-            if(!pool[i].phantom&&!(pureC[i]&&myC>=4)){ci[n]=i;ct[n]=V[j][i]+LAM*kvr[i]+(PM[i]&~have?pb:0);cq[n]=g>0?chance(ahead,g):0;n++}
+            if(!pool[i].phantom&&!(pureC[i]&&myC>=4)){
+              let v=V[j][i];if(wq){const e=E[i];v=0;for(let q=0;q<9;q++)v+=wq[q]*e[q]}
+              ci[n]=i;ct[n]=v+LAM*kvr[i]+(PM[i]&~have?pb:0);cq[n]=g>0?chance(ahead,g):0;n++}
             ahead++;
           }
           // what you'd get next turn anyway: about the (g+1)-th best still here
@@ -1585,14 +1622,16 @@ function simBuilds(team=me(),fw=futureW(),salt='',NS=120,seed=''){
             const free=PM[pick]&~have;if(free)have|=free&-free;
           }
           mi++;
-        }else if(typ[t]){
-          while(pE<P&&taken[ordE[pE]])pE++;
-          if(pE<P)pick=ordE[pE];
         }else{
-          while(pS<P&&taken[ordS[pS]])pS++;
-          if(pS<P)pick=ordS[pS];
+          const ord=typ[t]?ordE:ordS;let x=typ[t]?pE:pS;
+          while(x<P&&taken[ord[x]])x++;
+          if(typ[t])pE=x;else pS=x;
+          if(x<P){
+            pick=ord[x];const F=OF[t];
+            if(F){let best=F[pick];for(let y=x+1,seen=0;y<P&&seen<4;y++){const i=ord[y];if(taken[i])continue;seen++;const sc=F[i]-0.3*seen;if(sc>best){best=sc;pick=i}}}
+          }
         }
-        if(pick>=0){taken[pick]=1;picked[t].push(pick)}
+        if(pick>=0){taken[pick]=1;picked[t].push(pick);const e=E[pick];for(let q=0;q<9;q++)TT[t*9+q]+=e[q];CNT[t]++}
       }
       // each team's week: projected values plus this season's projection misses, with lineup limits
       const tot=Array.from({length:N()},(_,t)=>{
@@ -1961,6 +2000,7 @@ function guideHtml(){
       <li><b>Rounds 1 and 2:</b> take the best player left. Don't pick a plan before the draft.</li>
       <li><b>Around round 3:</b> choose a plan that fits what your first picks are good at. This panel suggests one.</li>
       <li><b>Balanced is always safe.</b> On your first try, give up 1 or 2 categories at most. Plans marked Hard are the trickiest to pull off.</li>
+      <li><b>"Playing as …"</b> next to the plan means your roster already loses some categories most weeks, whatever the plan is called. That's usually on purpose: when other teams hoard one kind of player, the app takes the stats they leave behind.</li>
       <li><b>Don't reach.</b> If a player says "Likely there at your next pick", take someone else now and get him later.</li>
     </ol>
     <h4>Reading the board</h4>
@@ -2028,6 +2068,13 @@ function renderAdvice(){
   // category back, and the look-ahead already weighs that.
   const effPunt=rosterOf(me()).length>=5?CATS.filter((c,q)=>M.top.cat[q]<0.3&&!TB.punt.includes(c)&&!S.punt.includes(c)):[];
   const winLine=usual.length?listCats(usual):TB.id==='bal'?'A bit of everything':listCats(TB.win);
+  // The plan's name can lag behind the roster: a "Balanced" team that loses rebounds and blocks most weeks is really
+  // playing as a Guard build (the stress test's bigs-rush league). Name the build the roster matches, so the headline
+  // says what the team is. Closest = most shared given-up categories (Jaccard), and it has to share at least half.
+  const gaveUp=[...new Set([...TB.punt,...effPunt])];
+  const jac=b=>b.punt.filter(c=>gaveUp.includes(c)).length/new Set([...b.punt,...gaveUp]).size;
+  const playsAs=effPunt.length?BUILDS.filter(b=>b.punt.length&&b!==TB).map(b=>({b,j:jac(b)})).sort((x,y)=>y.j-x.j||x.b.punt.length-y.b.punt.length)[0]:null;
+  const shapeHtml=!effPunt.length?'':`<span class="shape" title="Your roster loses ${esc(listCats(effPunt))} in most simulated weeks, so it plays like this build whatever the plan is called">${playsAs&&playsAs.j>=0.5?`Playing as ${esc(playsAs.b.name)}`:`Also giving up ${esc(listCats(effPunt))}`}</span>`;
   // your next picks, and who you usually end up with there when you follow this plan
   // On the clock this starts with the recommended player, then who you usually get next after taking
   // him (from his look-ahead run), so the plan and the Recommended card never name different players.
@@ -2044,7 +2091,7 @@ function renderAdvice(){
   };
   const buildHtml=()=>{const planRows=planRowsHtml();return `<div class="build">
       <div class="build-top"><span class="eyebrow">${S.order.length?'Best plan from here':`Best plan from the ${ordinal(S.slot)} pick`}</span><span class="sure ${sureCls(M.gap,M.se)}" title="${S.format==='roto'?'Roto league':`${(M.gap*100).toFixed(1)} points ahead of the next-best plan (simulation noise about ±${(M.se*200).toFixed(1)})`}">${S.format==='roto'?'Roto: stay balanced':sureWord(M.gap,M.se)}</span></div>
-      <div class="bname-row"><span class="bname">${esc(TB.name)}</span><span class="lvl ${TB.level.toLowerCase()}" title="How forgiving this plan is if a pick goes wrong">${TB.level}</span></div>
+      <div class="bname-row"><span class="bname">${esc(TB.name)}</span><span class="lvl ${TB.level.toLowerCase()}" title="How forgiving this plan is if a pick goes wrong">${TB.level}</span>${shapeHtml}</div>
       <p class="bdesc">${esc(TB.desc)}</p>
       ${S.format==='roto'?'':`<p class="bwin">In simulated drafts from your spot, this plan won <b>${Math.round(M.top.win*100)}%</b> of weekly matchups (about ${M.top.cats.toFixed(1)} of 9 categories a week).</p>`}
       <p class="bwin" title="How much better your best 6 keepers project than the picks they'd cost, over the next 3 seasons (later seasons count less). Same value points as the board.">Keeper value for future seasons: <b>+${M.top.keep.toFixed(1)}</b> <small class="kv-${M.top.keep>=M.ranked.reduce((s,r)=>s+r.keep,0)/M.ranked.length?'hi':'lo'}">${M.top.keep>=M.ranked.reduce((s,r)=>s+r.keep,0)/M.ranked.length?'above':'below'} the average plan</small></p>
@@ -2053,7 +2100,7 @@ function renderAdvice(){
       ${planRows?`<div class="lg-h eyebrow">Your next picks with this plan</div><ol class="pplan">${planRows}</ol><p class="bnote">${m===0?'Starting with the recommended pick, who':'Who'} you most often end up with at each of your picks when the draft is played out with this plan.</p>`:''}
       <details class="bmore"><summary>How the model rates each plan</summary>
         <div class="bbars" aria-label="Weekly matchups won by plan">${bars}</div>
-        <p class="bnote">The app plays the rest of the draft out many times. Each other manager drafts off the expert consensus or ${esc(SITES[S.site]||SITES.avg)}'s list (the mix is your "Your leaguemates" setting), with realistic randomness, and you draft for each plan from your real picks. Every finished team then plays the other nine week by week. The % is how many weekly matchups each plan won. It counts injuries (a waiver pickup fills missed games) and meets the expert consensus halfway when it disagrees with the projections. The plans come from 2026-27 draft guides (RotoWire, NBA.com, Yahoo, Elite Fantasy Basketball) plus the 2025-26 punt guides at NBC Sports and Hashtag Basketball.</p>
+        <p class="bnote">The app plays the rest of the draft out many times. Each other manager drafts off the expert consensus or ${esc(SITES[S.site]||SITES.avg)}'s list (the mix is your "Your leaguemates" setting), with realistic randomness, and a manager whose picks lean toward a plan keeps reaching for it. You draft for each plan from your real picks, going after the categories your team can still win rather than piling onto ones it already wins or can't. Every finished team then plays the other nine week by week. The % is how many weekly matchups each plan won. It counts injuries (a waiver pickup fills missed games) and meets the expert consensus halfway when it disagrees with the projections. The plans come from 2026-27 draft guides (RotoWire, NBA.com, Yahoo, Elite Fantasy Basketball) plus the 2025-26 punt guides at NBC Sports and Hashtag Basketball.</p>
       </details>
       <div class="lg-h eyebrow">What other teams are doing</div>
       ${league}
