@@ -81,7 +81,7 @@ def main(cached=False):
     adp_oth = sorted(([r[0], f(r[1]), f(r[2])] for k, r in adp.items() if k not in names and (r[3] or 999) <= 170), key=lambda x: x[0])
     today = datetime.date.today().strftime('%b %d, %Y').replace(' 0', ' ')
     j = lambda v: json.dumps(v, ensure_ascii=False, separators=(',', ':'))
-    app = replace_block(app, 'EXPERTS_ASOF', json.dumps(f"{meta.get('last_updated', '?')} ({meta.get('total_experts', '?')} experts)"))
+    app = replace_block(app, 'EXPERTS_ASOF', json.dumps(f"updated {meta.get('last_updated', '?')}, {meta.get('total_experts', '?')} experts"))
     app = replace_block(app, 'EXPERTS', j(experts))
     app = replace_block(app, 'EXPERTS_OTHERS', j(others))
     app = replace_block(app, 'ADP_ASOF', json.dumps(today))

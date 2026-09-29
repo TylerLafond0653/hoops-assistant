@@ -5,3 +5,5 @@ analysis/data/*.html
 __pycache__/
 *.pyc
 draft-room.backup.html
+# keep the archived preseason expert consensus: the source backtests need it and it is hard to re-fetch
+!analysis/data/fp_ecr_2025-10-19.html

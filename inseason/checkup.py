@@ -121,6 +121,7 @@ def load_demo():
 Z = ZMap(app_players())
 def z_of(p): return Z.z(p['line']) if p['line'] else [-1.0] * 9
 def per_game_value(p): return sum(z_of(p))
+WAIVER = -4.3        # per-game 9-cat value of a waiver-level player on the app's scale (its replacement profile)
 def season_value(p): return per_game_value(p) * min(1.0, p['G'] / 72) if p['line'] else -9
 
 
@@ -154,7 +155,8 @@ def ir_alerts(mine, fa, sched, week):
         if p['inj'] in OUT and p['slot'] != 13:
             if in_ir < IR_SLOTS:
                 in_ir += 1
-                best = max(fa, key=lambda f: per_game_value(f) * games_between(f, sched, *week), default=None)
+                cands = [f for f in fa if f['line'] and f['inj'] not in OUT and games_between(f, sched, *week) > 0]
+                best = max(cands, key=lambda f: (per_game_value(f) - WAIVER) * games_between(f, sched, *week), default=None)
                 add = f" Then pick up **{best['name']}** ({games_between(best, sched, *week)} games this week)." if best else ''
                 out.append(f"**{p['name']}** is {p['inj'].replace('_', ' ').lower()}: move him to IR.{add}")
             else:
@@ -210,10 +212,13 @@ def stream_alert(L, sched, week, today, close, keep=()):
     drop = min([p for p in L['mine'] if p not in keepers and p['slot'] != 13 and p['name'] not in keep], key=season_value, default=None)
     idx = {n: q for q, n in enumerate(NAMES)}
     def score(f):
+        # what his games add over an empty slot: value above a waiver-level player per game, times games left
+        # (plain value x games ranked a 0-game player above below-average players with games)
         z = z_of(f); g = games_between(f, sched, *rest)
         boost = sum(max(0, z[idx[c]]) for c in close)   # help the close categories
-        return (sum(z) + 1.5 * boost) * g
-    top = sorted((f for f in L['fa'] if f['line'] and f['inj'] not in OUT), key=score, reverse=True)[:3]
+        return (sum(z) - WAIVER + 1.5 * boost) * g
+    top = sorted((f for f in L['fa'] if f['line'] and f['inj'] not in OUT and games_between(f, sched, *rest) > 0),
+                 key=score, reverse=True)[:3]
     if not top or not drop: return None
     tops = ', '.join(f"{f['name']} ({games_between(f, sched, *rest)} g)" for f in top)
     return f"Stream: best pickups this week are {tops}. Drop candidate: {drop['name'].rstrip('.')}."

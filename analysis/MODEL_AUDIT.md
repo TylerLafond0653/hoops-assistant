@@ -1,5 +1,7 @@
 # Hoops Draft Room model audit (Sept 25, 2026)
 
+> **Reading guide:** sections 1–16 describe the model as it was audited on Sept 25. The changes made since, and the evidence behind each, are in **§17** (the audit fixes) and **§18** (the ranking sources: expert consensus as the market, FantasyPros projections, leaguemates as expert/ESPN types). The current app follows §17–18.
+
 **Question audited:** given the current draft state, does the app pick the player with the highest expected value for your roster in a 10-team, 9-category head-to-head (H2H) keeper league?
 
 **Scope and method:** the app (`draft-room.html`) is the source of truth, and no app code was changed. Every claim below is backed by one of the following:
