@@ -2426,8 +2426,11 @@ function pickReview(){
     if(!filled(p))return;
     const pl=byId.get(pidAt(p));if(!pl||!pl.z)return;
     const next=j+1<slots.length?slots[j+1]:T,k=ros.findIndex(x=>x.i===p);
+    // the 4-center limit: once you held 4 C-eligible players, a center wasn't a pick you could make
+    const cMaxed=ros.filter(x=>x.i<p&&x.p.pos.includes('C')).length>=MAX_C;
     const cands=players().filter(q=>{
       if(banned(q))return false;
+      if(cMaxed&&q.pos.includes('C'))return false;
       if(q.id===pl.id||!q.z)return false;
       const w=at.has(q.id)?at.get(q.id):Infinity;
       if(w<p)return false;                     // already gone
