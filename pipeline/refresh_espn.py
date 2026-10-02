@@ -5,6 +5,8 @@
   ESPN_OTHERS  [[name, ESPN live ADP, category rank]] for players outside the app's list that ESPN managers
                still draft (they use up other teams' picks in the simulator)
   LAST         last season's actual per-game stats (the board's "2025-26 actual" view)
+  POS_ESPN     {name: "PG/SG"} the positions ESPN lets each player start at (your league's lineup rules;
+               FanScout often lists only one, e.g. Anthony Edwards SG where ESPN allows SG/SF)
   teams        every player's current NBA team, from ESPN (written into the app's player rows)
 
 Then it prints an injury check built from ESPN's official NBA injury report (the one on ESPN.com, with
@@ -26,7 +28,7 @@ import datetime, glob, json, os, re, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, '..')
 sys.path.insert(0, os.path.join(ROOT, 'analysis'))
-from common import key, ESPN_TEAM, load_bbref   # noqa: E402
+from common import key, ESPN_TEAM, SLOT_POS, load_bbref   # noqa: E402
 
 APP = os.path.join(ROOT, 'draft-room.html')
 DATA = os.path.join(ROOT, 'analysis', 'data')
@@ -157,6 +159,8 @@ def replace_block(app, name, js):
 
 
 def main():
+    # accented names (Dončić, Niederhäuser) crashed the injury printout when output went to a file or pipe
+    if hasattr(sys.stdout, 'reconfigure'): sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     cached = '--cached' in sys.argv
     import refresh_fantasypros          # the expert consensus and Yahoo/ESPN ADP (FantasyPros)
     refresh_fantasypros.main(cached)
@@ -168,7 +172,7 @@ def main():
     rows = [json.loads(l.strip().rstrip(',')) for l in app[i0:i1].split('\n') if l.strip().startswith('["')]
     names = {key(r[0]): r for r in rows}
 
-    mkt, others, last, teams = {}, [], {}, {}
+    mkt, others, last, teams, pos = {}, [], {}, {}, {}
     for x in d['players']:
         pl = x['player']
         adp = (pl.get('ownership') or {}).get('averageDraftPosition')
@@ -180,7 +184,9 @@ def main():
             mkt[r[0]] = [adp, cat]
             team = ESPN_TEAM.get(pl.get('proTeamId'))
             if team: teams[k] = team
-            act = [s for s in pl.get('stats', []) if s.get('seasonId') == 2026 and s.get('statSourceId') == 0
+            ps = [SLOT_POS[s] for s in sorted(pl.get('eligibleSlots') or []) if s in SLOT_POS]
+            if ps: pos[r[0]] = '/'.join(ps)
+            act =[s for s in pl.get('stats', []) if s.get('seasonId') == 2026 and s.get('statSourceId') == 0
                    and s.get('statSplitTypeId') == 0 and s.get('averageStats')]
             if act:
                 a = act[0]['averageStats']; g = lambda q: float(a.get(q, 0) or 0)
@@ -206,11 +212,12 @@ def main():
     app = replace_block(app, 'ESPN_MKT', json.dumps(mkt, ensure_ascii=False, separators=(',', ':')))
     app = replace_block(app, 'ESPN_OTHERS', json.dumps(others, ensure_ascii=False, separators=(',', ':')))
     app = replace_block(app, 'LAST', json.dumps(last, ensure_ascii=False, separators=(',', ':')))
+    app = replace_block(app, 'POS_ESPN', json.dumps(pos, ensure_ascii=False, separators=(',', ':')))
     app, changes = apply_teams(app, teams)
     open(APP, 'w', encoding='utf-8', newline='\n').write(app)
     print(f"ESPN data {asof}: {len(mkt)} app players with ESPN draft data "
           f"({sum(1 for v in mkt.values() if v[0])} with a reliable ADP, {sum(1 for v in mkt.values() if v[1])} with a category rank), "
-          f"{len(others)} other drafted players, {len(last)} with last-season stats")
+          f"{len(others)} other drafted players, {len(last)} with last-season stats, {len(pos)} with ESPN positions")
     print(f"Team changes applied: {len(changes)}" + (':' if changes else ''))
     for c in changes: print(c)
     inj = fetch_injuries(cached)

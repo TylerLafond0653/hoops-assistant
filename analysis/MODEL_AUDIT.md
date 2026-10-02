@@ -689,3 +689,36 @@ The comparison between the two is now fair: the punt plan is played sensibly and
 - All three views of "true" are built from the same projection data. The experts-are-right column is the skeptical check, and there the pure expert list edges the app by 0.2-0.8 wins.
 - Leaguemates scatter about ±3 picks early and ±10 around pick 70.
 - In-season moves (waivers, streaming, trades) aren't modeled.
+
+---
+
+## 20. Lineup positions (Sept 29, 2026)
+
+**Why.** Following the app in a practice draft (seat 5, smart opponents) ended with 12 guard-eligible players, 10 of them guard-only. Section 9 had flagged it: the simulator scored teams without positions.
+
+**What the roster really cost.** Replayed on the real 2025-26 schedule (the nights each NBA team played), with ESPN's lineup (PG, SG, SF, PF, C, G, F, 3 UTIL) filled each night by the best players who fit:
+- Your roster lost **1.8%** of its possible starts to position limits, about 21 games. The nine list-drafted rosters lost 0-0.9%.
+- With FanScout's positions the same roster looked much worse (6.9%), because FanScout often lists one position where ESPN allows two. 162 of the 357 players differ (Edwards SG vs SG/SF, Giannis PF vs PF/C, Bridges SF vs SG/SF).
+
+**Changes**
+1. `POS_ESPN`: ESPN's eligible positions, written by `pipeline/refresh_espn.py`, replace FanScout's in the app. This affects the board, the position filters, the lineup view and the simulator.
+2. `lineupFit`: the simulator's team scoring counts the games a roster's position mix can't start (640 simulated nights using the real 2025-26 slate sizes). With ESPN's positions: up to 7 guard-only players cost about 0.1%, 9 about 1%, 10 about 2.4% and 11 about 5%. It applies only to the team being planned, since list-drafted teams lose 0-0.9%.
+3. The simulator's own picks for you skip the 9th guard-only or forward-only player, the same way they already skipped the 5th center-only one.
+
+**Replay of the practice draft.** The updated app makes the same pick at 12 of 15 spots. It changes 13.06 (Cameron Johnson instead of Cason Wallace) and 15.06. Several guard picks were near-ties, for example 5.06 Garland vs Jaren Jackson Jr. at 0.07 value points, but the look-ahead still prefers the guards once lineup losses are counted.
+
+**Stress test** (section 19 leagues, seeds 1-3, 15 leagues, your pick = the app's Recommended). Every roster was scored with lineup losses from ESPN's positions:
+
+| | Before | After |
+|---|---|---|
+| Wins (of 19) | 12.62 | 12.62 |
+| Wins, positions ignored | 12.79 | 12.78 |
+| Playoffs | 90.8% | 90.8% |
+| Title | 30% | 30% |
+| Guard-only players | 5.1 | 4.7 |
+
+- The change is **neutral**. About 3 players per roster change, and single leagues move by -0.6 to +0.8 wins, which cancel out.
+- Positions cost the old app's rosters only about 0.17 wins a season (0.3-0.45 in the bigs-rush league, where guards are what's left).
+- Kept because it makes the app match your league's real rules, not because it adds wins.
+
+**Checks:** the self-test covers ESPN positions and the lineup model. The first recommendation takes 1.8 s (was 1.2 s).

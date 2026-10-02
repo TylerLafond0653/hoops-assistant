@@ -18,6 +18,7 @@ This updates, inside `draft-room.html`:
 - the FantasyPros expert consensus for category leagues (what experienced drafters follow) and Yahoo/ESPN ADP;
 - ESPN's live ADP and ESPN's category rankings (the list ESPN's draft room shows);
 - every player's current team (signings and trades are applied automatically);
+- the positions ESPN lets each player start at (your league's lineup rules);
 - last season's stats;
 - players ESPN drafts who aren't on the app's list.
 
