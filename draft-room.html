@@ -1113,6 +1113,10 @@ function takenMap(){const m=new Map();KS.map.forEach((pid,p)=>m.set(pid,{p,keepe
 // players the league has banned (commissioner's rule): never available to anyone, so no card, odds or simulation uses them.
 // They stay in DATA so saved boards keep their player ids.
 const BANNED=new Set(['Deni Avdija']);
+// the league's roster limit: at most 4 players with C eligibility (ESPN counts C/PF players like Bam as centers)
+const MAX_C=4;
+const cFull=()=>rosterOf(me()).filter(x=>x.p.pos.includes('C')).length>=MAX_C;
+const blockedForMe=p=>cFull()&&p.pos.includes('C');
 const banned=p=>BANNED.has(p.name);
 function available(){const d=takenMap();return players().filter(p=>!d.has(p.id)&&!banned(p)).sort((a,b)=>a.rank-b.rank)}
 function rosterOf(t){
@@ -1614,8 +1618,9 @@ function simBuilds(team=me(),fw=futureW(),salt='',NS=120,seed=''){
     const d=CATS.map(c=>BUILDS.reduce((x,b,k)=>x+(pr[k]-LEAN0[k])*b.w[c],0));
     return E.map(e=>d.reduce((x,w,q)=>x+w*e[q],0))});
   // a lineup has one C slot plus UTIL/bench, so cap how many center-only players you stack
-  const pureC=pool.map(x=>!x.phantom&&x.pos.length===1&&x.pos[0]==='C');
-  const myC0=rosterOf(mine).filter(x=>x.p.pos.length===1&&x.p.pos[0]==='C').length;
+  // ESPN roster limit: at most MAX_C center-eligible players (anyone with C in his positions counts, e.g. Bam C/PF)
+  const pureC=pool.map(x=>!x.phantom&&(x.pos||[]).includes('C'));
+  const myC0=rosterOf(mine).filter(x=>x.p.pos.includes('C')).length;
   const myG0=rosterOf(mine).filter(x=>onlyIn(posMask(x.p),GUARD_ONLY)).length,myF0=rosterOf(mine).filter(x=>onlyIn(posMask(x.p),FWD_ONLY)).length;
   const myIdx=open.map((p,k)=>teamAt(p)===mine?k:-1).filter(k=>k>=0);
   const gap=myIdx.map((k,j)=>j+1<myIdx.length?myIdx[j+1]-k-1:0);
@@ -1673,7 +1678,7 @@ function simBuilds(team=me(),fw=futureW(),salt='',NS=120,seed=''){
           }
           for(const i of byAdp){
             if(taken[i])continue;
-            if(!pool[i].phantom&&!(pureC[i]&&myC>=4)&&!(onlyIn(PM[i],GUARD_ONLY)&&myG>=STACK_MAX)&&!(onlyIn(PM[i],FWD_ONLY)&&myF>=STACK_MAX)){
+            if(!pool[i].phantom&&!(pureC[i]&&myC>=MAX_C)&&!(onlyIn(PM[i],GUARD_ONLY)&&myG>=STACK_MAX)&&!(onlyIn(PM[i],FWD_ONLY)&&myF>=STACK_MAX)){
               let v=V[j][i];if(wq){const e=E[i];v=0;for(let q=0;q<9;q++)v+=wq[q]*e[q]}
               ci[n]=i;ct[n]=v+LAM*kvr[i]+(PM[i]&~have?pb:0);cq[n]=g>0?chance(ahead,g):0;n++}
             ahead++;
@@ -2110,7 +2115,7 @@ function renderAdvice(){
   const AI=adpIndex(av);
   // before your turn, discount players who probably won't make it to you
   const adj=x=>m===0?x.s:x.s*Math.min(1,.4+x.ch);
-  const scored=av.map(p=>{const i=AI.get(p.id),r=scorePlayer(p,A,round);return {p,i,s:r.s,why:r.why,ch:chance(i,m)}})
+  const scored=av.filter(p=>!blockedForMe(p)).map(p=>{const i=AI.get(p.id),r=scorePlayer(p,A,round);return {p,i,s:r.s,why:r.why,ch:chance(i,m)}})
     .filter(x=>m===0||x.ch>=.3)
     .sort((a,b)=>adj(b)-adj(a))
     .slice(0,5);
@@ -2193,7 +2198,7 @@ function renderAdvice(){
   const mAfter=after<0?-1:openBetween(c,after)-1;
   // each card's value: this season (your punts respected) plus scaled keeper value, same mix as the simulator
   const cv=p=>{const v=valueOf(p);return (v==null?-5:v)+futureW()*keeperPlan(p,round).kv};
-  const likely=av.map(p=>{const i=AI.get(p.id);return {p,i,ch:chance(i,m),chA:after<0?0:chance(i,mAfter),t:cv(p)}}).filter(x=>m===0||x.ch>=.3);
+  const likely=av.filter(p=>!blockedForMe(p)).map(p=>{const i=AI.get(p.id);return {p,i,ch:chance(i,m),chA:after<0?0:chance(i,mAfter),t:cv(p)}}).filter(x=>m===0||x.ch>=.3);
   // Don't reach, but don't pass on a star either. What you'd get at your following pick anyway is
   // about the best player left after the picks in between; passing on someone now costs his edge over
   // that, times the chance he's gone by then. Rank by that expected loss (no hard survival cutoff).
