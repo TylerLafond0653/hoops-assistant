@@ -1355,6 +1355,10 @@ const TUNE={
                    // matchups (1 = fully, 0 = the plan's fixed weights). Real-season backtest: +4 to +7 points of
                    // weekly wins for Balanced and +30 for Punt FT% over fixed weights (analysis/backtest_dynamic.py)
   oppBuilds:true,  // simulated leaguemates whose picks lean toward a plan keep drafting toward it
+  fullLine:true,   // a player your positions keep out of the lineup loses his whole stat line that night (zeroLine),
+                   // not just his edge over an average player. Without it an empty PG slot looked almost free: a
+                   // practice draft (Oct 1) ended with no point guard and 4 center-only players, 55% of weekly
+                   // matchups instead of the 69% the app showed
 };
 const WEEK_SD=TUNE.weekSd;
 // Week-to-week spread of each category's team total, measured on three seasons of real box scores with
@@ -1529,6 +1533,16 @@ const SLATE=[.133,.133,.2,.2,.267,.267,.333,.333,.333,.4,.4,.4,.4,.4,.4,.467,.46
 // practice roster (Sept 29) lost 1.8% of its starts, the nine list-drafted rosters 0-0.9%.
 // Returns position bits -> share of that player's games that still start. Cached by the roster's position mix.
 const LUC=new Map();
+// z of an empty stat line in each category (a night a player can't be started): from the projections, z = a + b x
+// per counting category; the percentages are unaffected (no shots) and turnovers improve
+let ZL=null;
+function zeroLine(){
+  if(ZL)return ZL;const ps=DEFAULT.filter(p=>p.z&&p.stats&&p.stats.G>20);
+  ZL=CATS.map(c=>{if(c==='FG'||c==='FT')return 0;const xs=ps.map(p=>p.stats[c]),ys=ps.map(p=>p.z[c]),n=xs.length,mx=xs.reduce((a,b)=>a+b,0)/n,my=ys.reduce((a,b)=>a+b,0)/n;
+    let sxy=0,sxx=0;xs.forEach((x,i)=>{sxy+=(x-mx)*(ys[i]-my);sxx+=(x-mx)**2});return my-sxy/sxx*mx});
+  return ZL;
+}
+const lostLine=()=>TUNE.fullLine?zeroLine():CATS.map(()=>0);
 function lineupFit(masks){
   const ms=masks.map(m=>m||31),key=ms.slice().sort((a,b)=>a-b).join(',');let f=LUC.get(key);if(f)return f;
   const n=ms.length,L=LINEUP.length,r=mulberry(hashStr('lu'+key)),on=new Int32Array(n),slot=new Int32Array(L),seen=new Uint8Array(L);
@@ -1556,7 +1570,7 @@ function lineupFit(masks){
 const GUARD_ONLY=3,FWD_ONLY=12,STACK_MAX=8;
 const onlyIn=(m,grp)=>m>0&&(m&~grp)===0;
 function simBuilds(team=me(),fw=futureW(),salt='',NS=120,seed=''){
-  const key=[S.order.map(p=>p+':'+S.board[p]).join(','),[...KS.map].join(','),S.site,S.savvy,fw,team,salt,NS,seed,S.teams,S.slot,S.rounds,S.reversal,players().length,players()[0]&&players()[0].name,TUNE.dynW,TUNE.oppBuilds].join('|');
+  const key=[S.order.map(p=>p+':'+S.board[p]).join(','),[...KS.map].join(','),S.site,S.savvy,fw,team,salt,NS,seed,S.teams,S.slot,S.rounds,S.reversal,players().length,players()[0]&&players()[0].name,TUNE.dynW,TUNE.oppBuilds,TUNE.fullLine].join('|');
   if(SIMC.key===key)return SIMC;
   if(SIMM.has(key))return SIMM.get(key);
   const T=total(),mine=team,R=replProfile(),nb=BUILDS.length;
@@ -1626,6 +1640,7 @@ function simBuilds(team=me(),fw=futureW(),salt='',NS=120,seed=''){
   const BSH=baseTeams.map(tm=>tm.map(b=>shockGen('b'+b.id)));
   // per-simulation results too, so the gap between two plans can be checked against the noise
   const res=BUILDS.map(b=>({win:0,cats:0,keep:0,cat:CATS.map(()=>0),winS:new Float64Array(NS),keepS:new Float64Array(NS),picks:myIdx.slice(0,SHOW).map(()=>new Map())}));
+  const ZL0=lostLine();
   const scE=new Float64Array(P),scS=new Float64Array(P),ct=new Float64Array(P),cq=new Float64Array(P),ci=new Int32Array(P);
   for(let s=0;s<NS;s++){
     // the same draft-day scatter for a player on both lists
@@ -1686,7 +1701,8 @@ function simBuilds(team=me(),fw=futureW(),salt='',NS=120,seed=''){
         const items=baseTeams[t].map((b,k)=>({e:b.e,x:BSH[t][k],sd:b.sd,m:b.m})).concat(picked[t].map(i=>({e:E[i],x:SH[i],sd:PS[i],m:PM[i]})));
         const fit=t===mine?lineupFit(items.map(it=>it.m)):null;
         items.forEach(it=>{let t2=0;for(let q=0;q<9;q++)t2+=it.e[q]+it.x[o+q]*it.sd;it.v=t2});items.sort((a,b)=>b.v-a.v);
-        const v=CATS.map(()=>0);items.forEach((it,k)=>{const wt=(SLOT_W[k]!=null?SLOT_W[k]:SLOT_W[SLOT_W.length-1])*(fit?fit.get(it.m||31):1);for(let q=0;q<CATS.length;q++)v[q]+=wt*(it.e[q]+it.x[o+q]*it.sd)});
+        // a start the position mix can't use loses his whole line that night (ZL0), not just his edge over average
+        const v=CATS.map(()=>0);items.forEach((it,k)=>{const wt=SLOT_W[k]!=null?SLOT_W[k]:SLOT_W[SLOT_W.length-1],g=fit?fit.get(it.m||31):1;for(let q=0;q<CATS.length;q++)v[q]+=wt*(g*(it.e[q]+it.x[o+q]*it.sd)+(1-g)*ZL0[q])});
         return v;
       });
       let w=0,cs=0;const cat=CATS.map(()=>0);
@@ -2352,10 +2368,12 @@ function renderTeam(){
 // simulator does: season value with missed games filled by a waiver player, lineup limits, and each
 // week decided category by category.
 function teamWeek(t,ros=rosterOf(t).map(x=>x.p)){
-  const R=replProfile(),items=ros.map(effZ);
-  while(items.length<S.rounds)items.push(R);   // picks not made yet: a waiver-level player for now
-  const tot=e=>e.reduce((s,v)=>s+v,0);items.sort((a,b)=>tot(b)-tot(a));
-  const v=CATS.map(()=>0);items.forEach((e,k)=>{const w=SLOT_W[Math.min(k,SLOT_W.length-1)];e.forEach((x,q)=>v[q]+=w*x)});
+  const R=replProfile(),items=ros.map(p=>({e:effZ(p),m:posMask(p)||31}));
+  while(items.length<S.rounds)items.push({e:R,m:31});   // picks not made yet: a waiver-level player who fits anywhere
+  // every team's position mix counts: starts it can't use lose the whole stat line (TUNE.fullLine)
+  const fit=TUNE.fullLine?lineupFit(items.map(it=>it.m)):null,Z0=lostLine();
+  const tot=e=>e.reduce((s,v)=>s+v,0);items.sort((a,b)=>tot(b.e)-tot(a.e));
+  const v=CATS.map(()=>0);items.forEach((it,k)=>{const w=SLOT_W[Math.min(k,SLOT_W.length-1)],g=fit?fit.get(it.m):1;it.e.forEach((x,q)=>v[q]+=w*(g*x+(1-g)*Z0[q]))});
   return v;
 }
 function leagueCompare(){
