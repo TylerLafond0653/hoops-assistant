@@ -1110,7 +1110,11 @@ function cur(){for(let p=0;p<total();p++)if(!filled(p))return p;return total()}
 function nextMine(from){for(let p=from;p<total();p++)if(teamAt(p)===me()&&!filled(p))return p;return -1}
 function openBetween(a,b){let n=0;for(let p=a;p<b;p++)if(!filled(p))n++;return n}
 function takenMap(){const m=new Map();KS.map.forEach((pid,p)=>m.set(pid,{p,keeper:true}));for(const k in S.board)m.set(S.board[k],{p:+k,keeper:false});return m}
-function available(){const d=takenMap();return players().filter(p=>!d.has(p.id)).sort((a,b)=>a.rank-b.rank)}
+// players the league has banned (commissioner's rule): never available to anyone, so no card, odds or simulation uses them.
+// They stay in DATA so saved boards keep their player ids.
+const BANNED=new Set(['Deni Avdija']);
+const banned=p=>BANNED.has(p.name);
+function available(){const d=takenMap();return players().filter(p=>!d.has(p.id)&&!banned(p)).sort((a,b)=>a.rank-b.rank)}
 function rosterOf(t){
   const out=[];for(let p=0;p<total();p++)if(teamAt(p)===t&&filled(p)){const pl=byId.get(pidAt(p));if(pl)out.push({p:pl,i:p,keeper:KS.map.has(p)})}
   return out;
@@ -2018,6 +2022,7 @@ function renderBoard(){
   const q=UI.q.trim().toLowerCase();
   const sk=SORTS[UI.sort]||SORTS.app;
   let list=players().slice().sort((a,b)=>sk(a)-sk(b)||a.rank-b.rank);
+  list=list.filter(p=>!banned(p));
   if(!UI.showGone)list=list.filter(p=>!d.has(p.id));
   if(UI.pos==='Q')list=list.filter(p=>S.queue.includes(p.id));
   else if(UI.pos==='KEEP')list=list.filter(p=>KG.has(p.id));
@@ -2417,6 +2422,7 @@ function pickReview(){
     const pl=byId.get(pidAt(p));if(!pl||!pl.z)return;
     const next=j+1<slots.length?slots[j+1]:T,k=ros.findIndex(x=>x.i===p);
     const cands=players().filter(q=>{
+      if(banned(q))return false;
       if(q.id===pl.id||!q.z)return false;
       const w=at.has(q.id)?at.get(q.id):Infinity;
       if(w<p)return false;                     // already gone
