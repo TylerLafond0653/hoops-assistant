@@ -22,10 +22,19 @@ from common import app_players, ZMap, key, CATS, ESPN_KEYS   # noqa: E402
 import notify                                               # noqa: E402
 
 SEASON = 2027
+class _Eastern(datetime.tzinfo):
+    """US Eastern time with daylight saving, for Windows without the tzdata package (GitHub's Ubuntu has it)"""
+    def _on(self, dt):
+        y, n = dt.year, dt.replace(tzinfo=None)
+        sun = lambda m, d: datetime.datetime(y, m, d) + datetime.timedelta(days=(6 - datetime.date(y, m, d).weekday()) % 7, hours=2)
+        return sun(3, 8) <= n < sun(11, 1)          # 2nd Sunday of March to 1st Sunday of November
+    def utcoffset(self, dt): return datetime.timedelta(hours=-4 if self._on(dt) else -5)
+    def dst(self, dt): return datetime.timedelta(hours=1 if self._on(dt) else 0)
+    def tzname(self, dt): return 'EDT' if self._on(dt) else 'EST'
 try:
     TZ = ZoneInfo('America/Toronto')
-except Exception:          # Windows without the tzdata package: Eastern time, close enough for game days
-    TZ = datetime.timezone(datetime.timedelta(hours=-5))
+except Exception:
+    TZ = _Eastern()
 BASE = f'https://lm-api-reads.fantasy.espn.com/apis/v3/games/fba/seasons/{SEASON}'
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/128 Safari/537.36'
 SLOT = {0: 'PG', 1: 'SG', 2: 'SF', 3: 'PF', 4: 'C', 5: 'G', 6: 'F', 11: 'UTIL', 12: 'BN', 13: 'IR'}
@@ -94,7 +103,8 @@ def load_league(cfg, cookies):
     fa = get(f'{BASE}/segments/0/leagues/{lid}?view=kona_player_info', cookies,
              {"players": {"filterStatus": {"value": ["FREEAGENT", "WAIVERS"]}, "limit": 120,
                           "sortPercOwned": {"sortPriority": 1, "sortAsc": False}}})
-    return dict(mine=roster(teams[tid]), opp=roster(teams[opp_id]) if opp_id else [],
+    return dict(league=d.get('settings', {}).get('name') or 'your league',
+                mine=roster(teams[tid]), opp=roster(teams[opp_id]) if opp_id else [],
                 fa=[player(x['player']) for x in fa.get('players', [])],
                 opp_name=(teams[opp_id].get('name') or teams[opp_id].get('abbrev')) if opp_id else '?',
                 score=(mine_score, opp_score))
@@ -184,8 +194,9 @@ def matchup_alert(L, sched, today, week):
     rest = (today, week[1])
     m, o = cats(week_totals(L['mine'], sched, *rest)), cats(week_totals(L['opp'], sched, *rest))
     sm, so = L['score']
+    ids = ['0', '6', '3', '2', '1', '17', '19', '20', '11']
+    started = bool(sm and so and any((sm.get(i) or {}).get('score') for i in ids))
     if sm and so:   # add what's already happened this week (ESPN stat ids)
-        ids = ['0', '6', '3', '2', '1', '17', '19', '20', '11']
         for q, sid in enumerate(ids):
             a, b = (sm.get(sid) or {}).get('score'), (so.get(sid) or {}).get('score')
             if a is None or b is None: continue
@@ -203,7 +214,8 @@ def matchup_alert(L, sched, today, week):
         sum(games_between(p, sched, *rest) for p in L['opp'] if p['inj'] not in OUT)
     line = f"vs {L['opp_name']}: projected {win}-{lose}" + (f", close in {', '.join(close)}" if close else '')
     line += f". Games left: you {games_me}, them {games_opp}."
-    return line, close, games_me - games_opp
+    live = started or games_me + games_opp > 0     # before the season there's nothing to compare
+    return line, close, games_me - games_opp, live
 
 
 def stream_alert(L, sched, week, today, close, keep=()):
@@ -259,24 +271,32 @@ def main():
             today = datetime.datetime.now(TZ).date()
         week = (today - datetime.timedelta(days=today.weekday()), today + datetime.timedelta(days=6 - today.weekday()))
         parts = []
-        la = lineup_alerts(L['mine'], sched, today); parts += la
-        starting = {p['name'] for p in L['mine'] if any(f"**{p['name']}**" in a for a in la)}
-        parts += ir_alerts(L['mine'], L['fa'], sched, (today, week[1]))
-        mline, close, gap = matchup_alert(L, sched, today, week)
-        parts.append(mline)
-        if today.weekday() <= 2 or gap <= -3:
-            s = stream_alert(L, sched, week, today, close, starting)
-            if s: parts.append(s)
-        if today.weekday() == 0:
-            w = waiver_alert(L)
-            if w: parts.append(w)
-        msg = f"**Hoops checkup, {today:%a %b %d}**\n" + '\n'.join('- ' + p for p in parts)
+        if L['mine']:
+            la = lineup_alerts(L['mine'], sched, today); parts += la
+            starting = {p['name'] for p in L['mine'] if any(f"**{p['name']}**" in a for a in la)}
+            parts += ir_alerts(L['mine'], L['fa'], sched, (today, week[1]))
+            mline, close, gap, live = matchup_alert(L, sched, today, week)
+            if live: parts.append(mline)
+            if live and (today.weekday() <= 2 or gap <= -3):
+                s = stream_alert(L, sched, week, today, close, starting)
+                if s: parts.append(s)
+            if today.weekday() == 0:
+                w = waiver_alert(L)
+                if w: parts.append(w)
+        status = (f"Connected to {L.get('league', 'your league')}. " +
+                  ("No roster yet, so checkups start after your draft." if not L['mine'] else "Nothing to do today."))
+        msg = f"**Hoops checkup, {today:%a %b %d}**\n" + '\n'.join('- ' + p for p in parts) if parts else None
     except PermissionError:
         msg = ("ESPN login expired. Update the ESPN_S2 and ESPN_SWID secrets (Chrome: F12 > Application > "
                "Cookies > espn.com) and re-run the checkup.")
     except Exception as e:   # tell Tyler rather than fail silently
         msg = f"Hoops checkup failed: {type(e).__name__}: {e}"
         if dry: raise
+    if msg is None:
+        # nothing to do: scheduled runs stay quiet; a run you start by hand (or a dry run) confirms it's working
+        if not (dry or os.environ.get('GITHUB_EVENT_NAME') == 'workflow_dispatch'):
+            print('Nothing to report today: ' + status); return
+        msg = f"**Hoops checkup, {today:%a %b %d}**\n- {status}"
     if dry: print(msg)
     else: print('sent' if notify.send(msg) else 'failed to send')
 

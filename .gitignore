@@ -1,5 +1,4 @@
 inseason/secrets.local.json
-inseason/config.json
 analysis/data/espn_feed_*.json
 analysis/data/*.html
 __pycache__/
