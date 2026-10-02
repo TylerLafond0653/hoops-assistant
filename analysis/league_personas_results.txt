@@ -22,3 +22,18 @@ Bad (ESPN list, 30% mistakes, wide scatter) app          16.2  100%      64%   1
 All 43 app drafts: 12.9 wins, 89% playoffs, 32% title (experts list: 11.7 / 80% / 24%; ESPN list: 10.8 / 71% / 17%).
 An average team: 9.5 wins, 60% playoffs, 10% title. 0 errors; 1.3 s per pick on average; final plan Balanced in all 43.
 1.05: Edwards 19, SGA 10, Luka 7, Wembanyama 5, Jokic 2 (whoever falls).
+
+50-draft check, Oct 1 2026 ~9:15 PM (after the lineup fix and ESPN list = category rank), seeds 41-90 over 8 league types.
+Graded with positions counted for every team (leagueCompare); "experts right" = 400 seasons with the expert consensus as truth.
+                         App (Recommended)      You follow the experts' list
+Finish                   1st in 45/50, avg 1.1  1st in 29/50, avg 2.0
+Weekly matchups won      72.5%                  66.8%
+If experts are right     12.1 wins, 82% PO      13.1 wins, 90% PO
+Keeper strength rank     1.7 (1st in 23/50)     4.0 (1st in 11/50)
+Players worth keeping    12.3                   8.4
+Rookies / sophomores     0.5 / 1.9              0.5 / 0.9
+Age 23 or under / 33+    3.6 / 1.9              2.5 / 1.2
+Drafts missing a position 0                      5
+PG per roster            4.6 (never 0)          5.8
+Plans: Balanced in all 50. 1.05: Edwards 19, Luka 17, SGA 12, Jokic 2.
+Most-drafted: Kawhi 21, Maluach 21, Butler 21 (late IR stash), Flagg 20, Edwards 19, Bane 19, Kyrie 18.
