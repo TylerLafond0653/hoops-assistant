@@ -443,7 +443,7 @@ textarea.inp{min-height:150px;padding:10px 12px;font-family:ui-monospace,Consola
     <section class="card board" aria-label="Player board">
       <div class="board-head">
         <div class="bh-top"><h2>Player board</h2><span class="eyebrow num" id="availCount"></span></div>
-        <p class="src">Projections: <a href="https://fanscout.pro/projections" target="_blank" rel="noopener">FanScout</a> (updated <span id="asof"></span>), ESPN's and <a href="https://www.fantasypros.com/nba/projections/overall.php" target="_blank" rel="noopener">FantasyPros'</a> consensus projections for 2026-27, averaged (FanScout's rookie and young-player projections tagged Rookie / Young; other veterans estimated from their 2025-26 stats, tagged Estimate). "Experts" is <a href="https://www.fantasypros.com/nba/rankings/overall.php" target="_blank" rel="noopener">FantasyPros'</a> consensus of category-league experts (<span id="expAsof"></span>). ADP is where ESPN managers take him: ESPN's live ADP averaged with ESPN's category-league rank (ESPN data <span id="mktAsof"></span>); Yahoo ADP from FantasyPros. Teams and injury notes checked against ESPN's injury report (<span id="newsAsof"></span>). "Last season" shows 2025-26 actual stats. Value is his 9-cat worth this season: per-game projections times the games he's expected to play (a waiver player fills the rest), met halfway with the expert consensus, adjusted for age 31+. Hover it for his per-game value.</p>
+        <p class="src">Projections: <a href="https://fanscout.pro/projections" target="_blank" rel="noopener">FanScout</a> (updated <span id="asof"></span>), ESPN's and <a href="https://www.fantasypros.com/nba/projections/overall.php" target="_blank" rel="noopener">FantasyPros'</a> consensus projections for 2026-27, averaged (FanScout's rookie and young-player projections tagged Rookie / Young; other veterans estimated from their 2025-26 stats, tagged Estimate). "Experts" is <a href="https://www.fantasypros.com/nba/rankings/overall.php" target="_blank" rel="noopener">FantasyPros'</a> consensus of category-league experts (<span id="expAsof"></span>). ADP is where ESPN managers in a category league take him: ESPN's category-league rank, the list your ESPN draft room shows (ESPN's live ADP mostly comes from points leagues, so it's only in the tooltip; ESPN data <span id="mktAsof"></span>); Yahoo ADP from FantasyPros. Teams and injury notes checked against ESPN's injury report (<span id="newsAsof"></span>). "Last season" shows 2025-26 actual stats. Value is his 9-cat worth this season: per-game projections times the games he's expected to play (a waiver player fills the rest), met halfway with the expert consensus, adjusted for age 31+. Hover it for his per-game value.</p>
         <p class="hint" id="hint"></p>
         <div class="tools">
           <label class="search"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m14 14 4 4" stroke-linecap="round"/></svg><input id="q" type="search" placeholder="Search a player or team, then press Enter to draft" autocomplete="off" aria-label="Search players"><kbd>/</kbd></label>
@@ -1344,7 +1344,9 @@ const TUNE={
   weekSd:1,        // multiplier on the measured weekly spread of each category (WEEK_SD_CAT)
   market:0.5,      // how far to meet ADP when it disagrees with the projections (backtest: +3.7 pts of weekly
                    // wins on average over 3 seasons; 0.25 and 0 did worse)
-  catRank:0.5,     // ESPN anchor: weight on ESPN's category-league rank vs ESPN's live ADP
+  catRank:1,       // ESPN anchor: weight on ESPN's category-league rank vs ESPN's live ADP. 1 since Oct 1: ESPN's live ADP
+                   // pools all ESPN leagues, mostly points (ESPN's default), and drafts bigs like Clingan/Kessler/Okongwu
+                   // 35-40 picks later than every category list; a categories draft room lists players by the category rank
   deplete:0.3,     // share of the league's keepers counted as gone before a pick next year (keeps a typical
                    // team at 8-9 players worth keeping, choosing its best 6; re-tuned for games-weighted keeper value)
   rookie:0.5,      // share of the measured rookie/sophomore extra growth that's counted
@@ -1985,7 +1987,7 @@ function adpTip(p){
   if(S.site!=='yahoo'){if(m[0]!=null)b.push(`ESPN ADP ${Math.round(m[0])}`);if(m[1]!=null)b.push(`ESPN category rank ${m[1]}`)}
   if(S.site!=='espn'&&p.adp&&p.adp[0]!=null)b.push(`Yahoo ADP ${p.adp[0]}`);
   const e=p.exp?` · expert consensus #${p.exp[0]} (range ${p.exp[1]}-${p.exp[2]})`:'';
-  return `Where ${SITES[S.site]||SITES.avg} managers take him${b.length?': '+b.join(', '):''}${e}`;
+  return `Where ${SITES[S.site]||SITES.avg} managers take him${b.length?': '+b.join(', '):''}${e}${S.site!=='yahoo'&&m[0]!=null&&TUNE.catRank>=1?'. ESPN ADP mostly comes from points leagues, so the app uses the category rank.':''}`;
 }
 // Board stats view: this season's projection (default) or last season's actual per-game stats.
 UI.statView='proj';
