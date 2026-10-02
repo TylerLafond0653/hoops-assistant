@@ -27,7 +27,7 @@ H.oppPick = function(t, P, seedStr, pickNo){
   const list = P.list==='espn' ? rankSite : rankExp;
   const nz = (tag,id) => gauss(mulberry(hashStr(seedStr+'|'+tag+'|'+id)));
   // a league-wide view of each player plus this manager's own
-  const noisy = av.map(p=>{const a=list(p);let r=a+(0.6*nz('all',p.id)+0.8*nz('t'+t,p.id))*adpSd(a);
+  const noisy = av.map(p=>{const a=list(p);let r=a+(0.6*nz('all',p.id)+0.8*nz('t'+t,p.id))*adpSd(a)*(P.noise||1);
     if(P.homer&&p.team===P.homer)r-=25; if(P.vet&&p.age>=31)r-=15; if(P.rookie&&p.est==='r')r-=20; return {p,r}}).sort((x,y)=>x.r-y.r);
   const rng = mulberry(hashStr(seedStr+'|m|'+pickNo));
   if(round>=2 && rng()<(P.mistake||0)){
@@ -62,7 +62,8 @@ H.runDraft = async function(personas, seed, strat, forced=()=>null){
       const fp=f?(typeof f==='string'?available().find(x=>x.name===f):f()):null;
       pick=fp||r.p;if(fp&&fp.id!==r.p.id)tag='off-script, app said '+r.p.name;
       log.push({pick:pickLabel(p),name:pick.name,plan:r.plan,sure:r.sure,tag});mi++;await new Promise(r=>setTimeout(r,0));
-    }else{const r=H.oppPick(t,personas[t],seedStr,p);pick=r.p;if(r.mistake)mistakes.push({team:nameOf(t),pick:pickLabel(p),name:pick.name,kind:r.mistake})}
+    }else if(personas[t].smart){UI.mockSeed=seedStr;pick=smartPick(t)}
+    else{const r=H.oppPick(t,personas[t],seedStr,p);pick=r.p;if(r.mistake)mistakes.push({team:nameOf(t),pick:pickLabel(p),name:pick.name,kind:r.mistake})}
     S.board[p]=pick.id;S.order.push(p);
   }
   return {rosters:Array.from({length:N()},(_,t)=>rosterOf(t).map(x=>x.p)),log,mistakes,lc:leagueCompare()};
@@ -103,6 +104,14 @@ H.SCN = {
              P_('exp','ast',1,{mistake:.05}),bal_('exp',{mistake:.05}),P_('exp','3pm',2,{mistake:.05}),bal_('espn',{mistake:.05}),bal_('exp',{mistake:.05})],
   guardsRush: [P_('exp','fg',1,{mistake:.05}),bal_('exp',{mistake:.05}),P_('exp','guards',1,{mistake:.05}),bal_('espn',{mistake:.05}),null,
                P_('exp','blk',2,{mistake:.05}),P_('exp','to',1,{mistake:.05}),bal_('exp',{mistake:.05}),P_('espn','count',2,{mistake:.05}),bal_('exp',{mistake:.05})],
+};
+// more leagues: very good, casual, bad, and leaguemates who use the app's own logic
+const all_=(P)=>Array.from({length:10},(_,t)=>t===4?null:{...P});
+H.SCN2 = {
+  sharpTight: Array.from({length:10},(_,t)=>t===4?null:P_(t%5===3?'espn':'exp','bal',99,{noise:.5})),   // experienced, stick close to the experts
+  casual: all_(P_('espn','bal',99,{mistake:.1})),                                                       // ESPN list, a few mistakes
+  bad: all_(P_('espn','bal',99,{mistake:.3,noise:1.5})),                                                // ESPN list, lots of mistakes
+  smart: all_({smart:true}),                                                                            // every leaguemate uses the app's brain
 };
 H.runAll = async function(seeds=[1,2,3,4], strats=['app','experts','espn','board']){
   const res=[];
