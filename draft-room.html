@@ -1766,9 +1766,11 @@ function lookahead(cands,anchor,NS=60,tag=''){
   const seed='la'+tag+':'+S.order.length+':'+S.site;
   const res=cands.map(p=>{
     S.board[c]=p.id;S.order.push(c);
-    const R=simBuilds(me(),fw,'la'+tag,NS,seed),rk=rankPlans(R.res,fw,b=>sameBuild(b,S.punt),anchor,rosterOf(me()).length),r=R.res[rk.order[0]];
-    const vals=Array.from(r.winS,(w,s)=>w+fw*WIN_PER_Z*r.keepS[s]);
-    S.order.pop();delete S.board[c];
+    let R,rk,r,vals;
+    try{
+      R=simBuilds(me(),fw,'la'+tag,NS,seed);rk=rankPlans(R.res,fw,b=>sameBuild(b,S.punt),anchor,rosterOf(me()).length);r=R.res[rk.order[0]];
+      vals=Array.from(r.winS,(w,s)=>w+fw*WIN_PER_Z*r.keepS[s]);
+    }finally{S.order.pop();delete S.board[c]}   // never leave a trial pick on the board
     // also who you usually get at your next picks after taking him (for "Your next picks")
     return {p,vals,v:vals.reduce((a,b)=>a+b,0)/vals.length,plan:BUILDS[rk.order[0]].id,picks:r.picks,my:R.myPicks};
   }).sort((a,b)=>b.v-a.v);
@@ -2019,7 +2021,9 @@ function renderBoard(){
   else if(UI.pos==='KEEP')list=list.filter(p=>KG.has(p.id));
   else if(UI.pos!=='ALL')list=list.filter(p=>p.pos.includes(UI.pos));
   const qn=normName(q);
-  if(q)list=list.filter(p=>(qn&&normName(p.name).includes(qn))||p.team.toLowerCase()===q);
+  // name matches first, then players whose team code matches: Enter drafts the top row, so typing 'por' for
+  // Michael Porter Jr. must not hand out a Portland player
+  if(q){const nameHit=p=>qn&&normName(p.name).includes(qn);const byName=list.filter(nameHit);list=[...byName,...list.filter(p=>!nameHit(p)&&p.team.toLowerCase()===q)]}
   $('#oddsHead').textContent=m===0?'':'At your pick';
   const btnLabel=myTurn?'Draft':`To ${onClock<0?'':esc(shortName(onClock))}`;
   const rows=list.slice(0,250).map(p=>{
